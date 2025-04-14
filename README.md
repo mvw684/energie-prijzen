@@ -9,3 +9,4 @@ Tooling to evaluate pricing options/tariffs for electricity, comparing fixed and
 
 [battery (Sessy) data](https://portal.sessy.nl/products) only works if you have these batteries and have portal access.
 
+[Slimme meter Portal(download](https://app.slimmemeterportal.nl/cust/account/data_download)
