@@ -8,6 +8,15 @@ using System.Text.Json;
 namespace EnergiePrijzen.Config {
     public class Settings {
 
+        private static readonly JsonSerializerOptions serializerOptions =
+            new JsonSerializerOptions {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                AllowTrailingCommas = true,
+                IndentCharacter = ' ',
+                IndentSize = 2
+            };
+
         public int Jaar {
             get; set;
         } = 2024;
@@ -21,22 +30,12 @@ namespace EnergiePrijzen.Config {
             get; set;
         } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\SolarEdge";
 
-        public string SlimmeMeterData {
+        public string SlimmeMeter {
             get;set;
         } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\SlimmeMeterPortal";
 
         public string ToJson() {
-            return 
-                JsonSerializer.Serialize(
-                    this, 
-                    new JsonSerializerOptions {
-                        WriteIndented = true,
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                        AllowTrailingCommas = true,
-                        IndentCharacter = ' ',
-                        IndentSize = 2
-                    }
-                );
+            return JsonSerializer.Serialize(this, serializerOptions);
         }
 
         public static bool FromJson(string json, [NotNullWhen(true)] out Settings? settings) {

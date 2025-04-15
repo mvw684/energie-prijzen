@@ -1,29 +1,28 @@
 ﻿// Copyright (c) 2025 mvw684
 
-using System;
 using System.Collections.Generic;
 
 namespace EnergiePrijzen.Data {
     internal class TimeStampedData<TData> where TData : IAggregatableData<TData>, new() {
-        private DateTime hour;
+        private readonly TimeStamp timestamp;
         private TData? aggregated;
-        private List<TData> raw;
+        private readonly List<TData> raw;
 
-        public TimeStampedData(DateTime hour) {
-            this.hour = hour;
-            this.raw = new List<TData>();
+        public TimeStampedData(TimeStamp timestamp) {
+            this.timestamp = timestamp;
+            raw = [];
         }
 
-        public DateTime Hour {
-            get => hour;
+        public TimeStamp TimeStamp {
+            get => timestamp;
         }
 
-        void Aggregate() {
+        public void Aggregate() {
             if(aggregated is null) {
                 if(raw.Count == 0) {
                     aggregated = new TData();
                 } else {
-                    aggregated = new TData().Aggregate(raw);
+                    aggregated = TData.Aggregate(raw);
                 }
             }
         }

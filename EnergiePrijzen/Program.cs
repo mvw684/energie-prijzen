@@ -20,7 +20,6 @@ namespace EnergiePrijzen {
             var settings = SettingsReader.Read();
             ApplicationConfiguration.Initialize();
             Application.Run(new DataSelectie(settings));
-            settings.Save();
         }
 
         private static void OnUnhandledException(

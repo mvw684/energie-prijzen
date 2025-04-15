@@ -4,6 +4,6 @@ using System.Collections.Generic;
 
 namespace EnergiePrijzen.Data {
     internal interface IAggregatableData<TData> {
-        TData Aggregate(List<TData> data);
+       public static abstract TData Aggregate(List<TData> data);
     }
 }
