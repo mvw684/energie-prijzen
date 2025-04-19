@@ -35,41 +35,51 @@ namespace EnergiePrijzen.UI
             slimmeMeterFolder = new TextBox();
             save = new Button();
             compute = new Button();
+            labelSessy = new Label();
+            sessyFolder = new TextBox();
+            labelResultaat = new Label();
+            resultaatFolder = new TextBox();
+            labelPeriode = new Label();
+            periodeStart = new DateTimePicker();
+            periodeEnd = new DateTimePicker();
             SuspendLayout();
             // 
             // jeroenLabel
             // 
             jeroenLabel.AutoSize = true;
-            jeroenLabel.Location = new Point(2, 29);
+            jeroenLabel.Location = new Point(2, 40);
             jeroenLabel.Name = "jeroenLabel";
             jeroenLabel.Size = new Size(41, 15);
             jeroenLabel.TabIndex = 0;
             jeroenLabel.Text = "Jeroen";
+            jeroenLabel.DoubleClick += OpenJeroen;
             // 
             // solaredgeLabel
             // 
             solaredgeLabel.AutoSize = true;
-            solaredgeLabel.Location = new Point(2, 55);
+            solaredgeLabel.Location = new Point(2, 66);
             solaredgeLabel.Name = "solaredgeLabel";
             solaredgeLabel.Size = new Size(62, 15);
             solaredgeLabel.TabIndex = 1;
             solaredgeLabel.Text = "Solar Edge";
+            solaredgeLabel.DoubleClick += OpenSolarEdge;
             // 
             // labelSlimmeMeter
             // 
             labelSlimmeMeter.AutoSize = true;
-            labelSlimmeMeter.Location = new Point(2, 80);
+            labelSlimmeMeter.Location = new Point(2, 91);
             labelSlimmeMeter.Name = "labelSlimmeMeter";
             labelSlimmeMeter.Size = new Size(78, 15);
             labelSlimmeMeter.TabIndex = 2;
             labelSlimmeMeter.Text = "SlimmeMeter";
+            labelSlimmeMeter.DoubleClick += OpenSlimmeMeter;
             // 
             // jeroenFolder
             // 
             jeroenFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             jeroenFolder.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            jeroenFolder.AutoCompleteSource = AutoCompleteSource.FileSystem;
-            jeroenFolder.Location = new Point(81, 26);
+            jeroenFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
+            jeroenFolder.Location = new Point(81, 37);
             jeroenFolder.Name = "jeroenFolder";
             jeroenFolder.Size = new Size(707, 23);
             jeroenFolder.TabIndex = 3;
@@ -78,8 +88,8 @@ namespace EnergiePrijzen.UI
             // 
             solaredgeFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             solaredgeFolder.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            solaredgeFolder.AutoCompleteSource = AutoCompleteSource.FileSystem;
-            solaredgeFolder.Location = new Point(81, 52);
+            solaredgeFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
+            solaredgeFolder.Location = new Point(81, 62);
             solaredgeFolder.Name = "solaredgeFolder";
             solaredgeFolder.Size = new Size(707, 23);
             solaredgeFolder.TabIndex = 4;
@@ -88,8 +98,8 @@ namespace EnergiePrijzen.UI
             // 
             slimmeMeterFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             slimmeMeterFolder.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            slimmeMeterFolder.AutoCompleteSource = AutoCompleteSource.FileSystem;
-            slimmeMeterFolder.Location = new Point(81, 77);
+            slimmeMeterFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
+            slimmeMeterFolder.Location = new Point(81, 87);
             slimmeMeterFolder.Name = "slimmeMeterFolder";
             slimmeMeterFolder.Size = new Size(707, 23);
             slimmeMeterFolder.TabIndex = 5;
@@ -115,12 +125,87 @@ namespace EnergiePrijzen.UI
             compute.TabIndex = 7;
             compute.Text = "compute";
             compute.UseVisualStyleBackColor = true;
+            compute.Click += OnCompute;
+            // 
+            // labelSessy
+            // 
+            labelSessy.AutoSize = true;
+            labelSessy.Location = new Point(2, 114);
+            labelSessy.Name = "labelSessy";
+            labelSessy.Size = new Size(35, 15);
+            labelSessy.TabIndex = 8;
+            labelSessy.Text = "Sessy";
+            labelSessy.DoubleClick += OpenSessy;
+            // 
+            // sessyFolder
+            // 
+            sessyFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            sessyFolder.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            sessyFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
+            sessyFolder.Location = new Point(81, 111);
+            sessyFolder.Name = "sessyFolder";
+            sessyFolder.Size = new Size(707, 23);
+            sessyFolder.TabIndex = 9;
+            // 
+            // labelResultaat
+            // 
+            labelResultaat.AutoSize = true;
+            labelResultaat.Location = new Point(2, 138);
+            labelResultaat.Name = "labelResultaat";
+            labelResultaat.Size = new Size(55, 15);
+            labelResultaat.TabIndex = 10;
+            labelResultaat.Text = "Resultaat";
+            labelResultaat.DoubleClick += OpenResultaat;
+            // 
+            // resultaatFolder
+            // 
+            resultaatFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            resultaatFolder.Location = new Point(81, 135);
+            resultaatFolder.Name = "resultaatFolder";
+            resultaatFolder.Size = new Size(707, 23);
+            resultaatFolder.TabIndex = 11;
+            // 
+            // labelPeriode
+            // 
+            labelPeriode.AutoSize = true;
+            labelPeriode.Location = new Point(2, 19);
+            labelPeriode.Name = "labelPeriode";
+            labelPeriode.Size = new Size(47, 15);
+            labelPeriode.TabIndex = 12;
+            labelPeriode.Text = "Periode";
+            // 
+            // periodeStart
+            // 
+            periodeStart.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            periodeStart.CustomFormat = "yyyy-MM-dd";
+            periodeStart.Format = DateTimePickerFormat.Custom;
+            periodeStart.Location = new Point(82, 13);
+            periodeStart.Name = "periodeStart";
+            periodeStart.Size = new Size(146, 23);
+            periodeStart.TabIndex = 13;
+            // 
+            // periodeEnd
+            // 
+            periodeEnd.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            periodeEnd.CustomFormat = "yyyy-MM-dd";
+            periodeEnd.Format = DateTimePickerFormat.Custom;
+            periodeEnd.Location = new Point(234, 13);
+            periodeEnd.Name = "periodeEnd";
+            periodeEnd.Size = new Size(146, 23);
+            periodeEnd.TabIndex = 14;
             // 
             // DataSelectie
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(periodeEnd);
+            Controls.Add(periodeStart);
+            Controls.Add(labelPeriode);
+            Controls.Add(resultaatFolder);
+            Controls.Add(labelResultaat);
+            Controls.Add(sessyFolder);
+            Controls.Add(labelSessy);
             Controls.Add(compute);
             Controls.Add(save);
             Controls.Add(slimmeMeterFolder);
@@ -145,5 +230,12 @@ namespace EnergiePrijzen.UI
         private TextBox slimmeMeterFolder;
         private Button save;
         private Button compute;
+        private Label labelSessy;
+        private TextBox sessyFolder;
+        private Label labelResultaat;
+        private TextBox resultaatFolder;
+        private Label labelPeriode;
+        private DateTimePicker periodeStart;
+        private DateTimePicker periodeEnd;
     }
 }

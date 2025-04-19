@@ -17,9 +17,13 @@ namespace EnergiePrijzen.Config {
                 IndentSize = 2
             };
 
-        public int Jaar {
+        public string PeriodeStart {
             get; set;
-        } = 2024;
+        } = "2024-1-1";
+
+        public string PeriodeEnd {
+            get; set;
+        } = "2025-1-1";
 
         public string JeroenPrijzen {
             get; set;
@@ -34,9 +38,16 @@ namespace EnergiePrijzen.Config {
             get;set;
         } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\SlimmeMeterPortal";
 
+        public string Sessy {
+            get; set;
+        } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\Sessy";
         public string ToJson() {
             return JsonSerializer.Serialize(this, serializerOptions);
         }
+
+        public string Resultaat {
+            get; set;
+        } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\Resultaat";
 
         public static bool FromJson(string json, [NotNullWhen(true)] out Settings? settings) {
             try {
