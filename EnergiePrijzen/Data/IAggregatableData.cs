@@ -3,7 +3,10 @@
 using System.Collections.Generic;
 
 namespace EnergiePrijzen.Data {
-    internal interface IAggregatableData<TData> {
-       public static abstract TData Aggregate(List<TData> data);
+    public interface IAggregatableData<TData> : ITimeStampedData<TData> {
+
+        public abstract TData AggregateData();
+
+        public static abstract TData Aggregate(List<TData> data);
     }
 }

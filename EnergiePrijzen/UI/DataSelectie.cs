@@ -1,3 +1,5 @@
+// Copyright (c) 2025 mvw684
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -6,16 +8,11 @@ using System.Windows.Forms;
 using EnergiePrijzen.Config;
 using EnergiePrijzen.Data;
 
-using Windows.Media.Protection.PlayReady;
-
 namespace EnergiePrijzen.UI
 {
     public partial class DataSelectie : Form {
 
         private readonly Settings settings;
-
-        private const string dateFormat = "yyyy-MM-dd";
-        private readonly string[] dateFormats = [dateFormat];
 
         public DataSelectie(Settings settings) {
             this.settings = settings;
@@ -25,13 +22,13 @@ namespace EnergiePrijzen.UI
             slimmeMeterFolder.Text = settings.SlimmeMeter;
             sessyFolder.Text = settings.Sessy;
             resultaatFolder.Text = settings.Resultaat;
-            if(DateTime.TryParseExact(settings.PeriodeStart, dateFormats, null, System.Globalization.DateTimeStyles.AssumeLocal, out DateTime start)) {
-                periodeStart.Value = start;
+            if(settings.PeriodeStart.TryParse(out TimeStamp? start)) {
+                periodeStart.Value = start.Value.Start;
             } else {
                 periodeStart.Value = new DateTime(DateTime.Now.Year - 1, 1, 1);
             }
-            if(DateTime.TryParseExact(settings.PeriodeEnd, dateFormats, null, System.Globalization.DateTimeStyles.AssumeLocal, out DateTime end)) {
-                periodeEnd.Value = end;
+            if(settings.PeriodeEnd.TryParse(out TimeStamp? end)) {
+                periodeEnd.Value = end.Value.Start;
             } else {
                 periodeEnd.Value = new DateTime(DateTime.Now.Year, 1, 1);
             }
@@ -45,7 +42,10 @@ namespace EnergiePrijzen.UI
 
         private void OnCompute(object sender, EventArgs e) {
             if (UpdateSettings()) {
-                new DataGenerator(settings).GenerateData();
+                var generator = new DataGenerator(settings);
+                if(!generator.GenerateData()) {
+                    var _ = MessageBox.Show("Data generatie mislukt", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -64,8 +64,8 @@ namespace EnergiePrijzen.UI
                 settings.SlimmeMeter = slimmeMeterValue;
                 settings.Sessy = sessyFolderValue;
                 settings.Resultaat = resultaatFolderValue;
-                settings.PeriodeStart = start.ToString(dateFormat);
-                settings.PeriodeEnd = end.ToString(dateFormat);
+                settings.PeriodeStart = start.ToString(TimeStampExtensions.DateFormat);
+                settings.PeriodeEnd = end.ToString(TimeStampExtensions.DateFormat);
                 return true;
             }
             return false;

@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EnergiePrijzen.Data {
-    internal readonly struct TimeStamp : IComparable<TimeStamp>, IEquatable<TimeStamp> {
+    public readonly struct TimeStamp : IComparable<TimeStamp>, IEquatable<TimeStamp> {
         private readonly DateTime start;
 
         private static readonly TimeSpan duration = TimeSpan.FromMinutes(60);
@@ -33,5 +33,17 @@ namespace EnergiePrijzen.Data {
         public int CompareTo(TimeStamp other) => start.CompareTo(other.start);
 
         public bool Equals(TimeStamp other) => start.Equals(other.start);
+
+        public static bool operator ==(TimeStamp left, TimeStamp right) => left.Equals(right);
+
+        public static bool operator !=(TimeStamp left, TimeStamp right) => !left.Equals(right);
+
+        public static bool operator <(TimeStamp left, TimeStamp right) => left.CompareTo(right) < 0;
+
+        public static bool operator >(TimeStamp left, TimeStamp right) => left.CompareTo(right) > 0;
+
+        public static bool operator <=(TimeStamp left, TimeStamp right) => left.CompareTo(right) <= 0;
+        public static bool operator >=(TimeStamp left, TimeStamp right) => left.CompareTo(right) >= 0;
+        public static TimeStamp operator +(TimeStamp left, TimeSpan right) => new TimeStamp(left.start + right);
     }
 }

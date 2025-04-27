@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿// Copyright (c) 2025 mvw684
+
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace EnergiePrijzen.UI
