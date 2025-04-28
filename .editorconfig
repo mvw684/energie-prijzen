@@ -7,7 +7,10 @@ dotnet_diagnostic.IDE0090.severity = silent
 dotnet_diagnostic.IDE0290.severity = silent
 
 # IDE0008: Use explicit type
-dotnet_diagnostic.IDE0008.severity = silent
+dotnet_diagnostic.IDE0008.severity = suggestion
 
 # IDE0028: Simplify collection initialization
-dotnet_diagnostic.IDE0028.severity = silent
+dotnet_diagnostic.IDE0028.severity = suggestion
+
+# IDE0301: Simplify collection initialization
+dotnet_diagnostic.IDE0301.severity = suggestion

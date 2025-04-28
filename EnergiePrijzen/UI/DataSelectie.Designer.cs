@@ -44,6 +44,7 @@ namespace EnergiePrijzen.UI
             labelPeriode = new Label();
             periodeStart = new DateTimePicker();
             periodeEnd = new DateTimePicker();
+            textLog = new TextBox();
             SuspendLayout();
             // 
             // jeroenLabel
@@ -108,8 +109,8 @@ namespace EnergiePrijzen.UI
             // 
             // save
             // 
-            save.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            save.Location = new Point(632, 415);
+            save.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            save.Location = new Point(632, 164);
             save.Name = "save";
             save.Size = new Size(75, 23);
             save.TabIndex = 6;
@@ -120,8 +121,8 @@ namespace EnergiePrijzen.UI
             // 
             // compute
             // 
-            compute.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            compute.Location = new Point(713, 415);
+            compute.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            compute.Location = new Point(713, 164);
             compute.Name = "compute";
             compute.Size = new Size(75, 23);
             compute.TabIndex = 7;
@@ -196,11 +197,23 @@ namespace EnergiePrijzen.UI
             periodeEnd.Size = new Size(146, 23);
             periodeEnd.TabIndex = 14;
             // 
+            // textLog
+            // 
+            textLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            textLog.HideSelection = false;
+            textLog.Location = new Point(2, 193);
+            textLog.Multiline = true;
+            textLog.Name = "textLog";
+            textLog.ReadOnly = true;
+            textLog.Size = new Size(786, 255);
+            textLog.TabIndex = 15;
+            // 
             // DataSelectie
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(textLog);
             Controls.Add(periodeEnd);
             Controls.Add(periodeStart);
             Controls.Add(labelPeriode);
@@ -239,5 +252,6 @@ namespace EnergiePrijzen.UI
         private Label labelPeriode;
         private DateTimePicker periodeStart;
         private DateTimePicker periodeEnd;
+        private TextBox textLog;
     }
 }

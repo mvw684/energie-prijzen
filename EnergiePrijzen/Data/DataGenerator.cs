@@ -14,10 +14,10 @@ namespace EnergiePrijzen.Data {
 
         internal bool GenerateData() {
             var timeStamps = new UniqueItemList<TimeStamp>(EqualityComparer<TimeStamp>.Default);
-            if (!settings.PeriodeStart.TryParse(out var start)) {
+            if (!settings.PeriodeStart.TryParseDate(out var start)) {
                 return false;
             }
-            if (!settings.PeriodeEnd.TryParse(out var end)) {
+            if (!settings.PeriodeEnd.TryParseDate(out var end)) {
                 return false;
             }
 

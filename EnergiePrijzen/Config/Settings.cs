@@ -32,7 +32,7 @@ namespace EnergiePrijzen.Config {
         
         public string SolarEdge {
             get; set;
-        } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\SolarEdge";
+        } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\Zonnepanelen";
 
         public string SlimmeMeter {
             get;set;

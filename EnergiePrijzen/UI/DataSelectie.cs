@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks.Dataflow;
 using System.Windows.Forms;
 
 using EnergiePrijzen.Config;
@@ -22,16 +23,36 @@ namespace EnergiePrijzen.UI
             slimmeMeterFolder.Text = settings.SlimmeMeter;
             sessyFolder.Text = settings.Sessy;
             resultaatFolder.Text = settings.Resultaat;
-            if(settings.PeriodeStart.TryParse(out TimeStamp? start)) {
+            if(settings.PeriodeStart.TryParseDate(out TimeStamp? start)) {
                 periodeStart.Value = start.Value.Start;
             } else {
                 periodeStart.Value = new DateTime(DateTime.Now.Year - 1, 1, 1);
             }
-            if(settings.PeriodeEnd.TryParse(out TimeStamp? end)) {
+            if(settings.PeriodeEnd.TryParseDate(out TimeStamp? end)) {
                 periodeEnd.Value = end.Value.Start;
             } else {
                 periodeEnd.Value = new DateTime(DateTime.Now.Year, 1, 1);
             }
+            ExceptionReporting.ExceptionReporters += ReportException;
+        }
+
+        private void ReportException(object sender, ExceptionReporting.ExceptionMessageEventArgs args) {
+            var exception = args.Exception;
+            var cause = args.Message;
+            Trace(cause + " " + exception.GetType().Name + ": " + exception.Message);
+            Trace(exception.StackTrace);
+        }
+
+        private void Trace(string? message) {
+            if (InvokeRequired) {
+                Invoke(new Action<string>(Trace), message);
+                return;
+            }
+            
+            if (message == null) {
+                message = "<null>";
+            }
+            textLog.AppendText(message + Environment.NewLine);
         }
 
         private void OnSaveClick(object sender, EventArgs e) {
