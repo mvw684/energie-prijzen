@@ -19,6 +19,7 @@ namespace EnergiePrijzen.UI
             if (disposing && (components != null)) {
                 components.Dispose();
             }
+            Tracer.Tracers -= TraceFromEvent;
             base.Dispose(disposing);
         }
 

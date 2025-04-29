@@ -3,7 +3,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks.Dataflow;
 using System.Windows.Forms;
 
 using EnergiePrijzen.Config;
@@ -14,6 +13,7 @@ namespace EnergiePrijzen.UI
     public partial class DataSelectie : Form {
 
         private readonly Settings settings;
+        private bool executing;
 
         public DataSelectie(Settings settings) {
             this.settings = settings;
@@ -33,26 +33,23 @@ namespace EnergiePrijzen.UI
             } else {
                 periodeEnd.Value = new DateTime(DateTime.Now.Year, 1, 1);
             }
-            ExceptionReporting.ExceptionReporters += ReportException;
+            Tracer.Tracers += TraceFromEvent;
         }
 
-        private void ReportException(object sender, ExceptionReporting.ExceptionMessageEventArgs args) {
-            var exception = args.Exception;
-            var cause = args.Message;
-            Trace(cause + " " + exception.GetType().Name + ": " + exception.Message);
-            Trace(exception.StackTrace);
-        }
+        private void TraceFromEvent(object sender, Tracer.TraceMessageEventArgs args) => TraceInternal(args.Message);
 
-        private void Trace(string? message) {
+        private void TraceInternal(string? message) {
             if (InvokeRequired) {
-                Invoke(new Action<string>(Trace), message);
+                Invoke(new Action<string>(TraceInternal), message);
                 return;
             }
-            
             if (message == null) {
                 message = "<null>";
             }
             textLog.AppendText(message + Environment.NewLine);
+            if (executing) {
+                Application.DoEvents();
+            }
         }
 
         private void OnSaveClick(object sender, EventArgs e) {
@@ -63,9 +60,14 @@ namespace EnergiePrijzen.UI
 
         private void OnCompute(object sender, EventArgs e) {
             if (UpdateSettings()) {
-                var generator = new DataGenerator(settings);
-                if(!generator.GenerateData()) {
-                    var _ = MessageBox.Show("Data generatie mislukt", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try {
+                    executing = true;
+                    var generator = new DataGenerator(settings);
+                    if(!generator.GenerateData()) {
+                        var _ = MessageBox.Show("Data generatie mislukt", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                } finally {
+                    executing = false;
                 }
             }
         }

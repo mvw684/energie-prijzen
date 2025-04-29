@@ -9,8 +9,9 @@ using EnergiePrijzen.Data.Prijzen;
 namespace EnergiePrijzen.Data {
     internal class DataGenerator {
         private readonly Settings settings;
-        
-        public DataGenerator(Settings settings) => this.settings = settings;
+        public DataGenerator(Settings settings) {
+            this.settings = settings;
+        }
 
         internal bool GenerateData() {
             var timeStamps = new UniqueItemList<TimeStamp>(EqualityComparer<TimeStamp>.Default);

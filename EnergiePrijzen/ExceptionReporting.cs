@@ -8,31 +8,14 @@ using System.Windows.Forms;
 namespace EnergiePrijzen {
     internal class ExceptionReporting : IDisposable {
 
-        public class ExceptionMessageEventArgs : EventArgs {
-            required public string Message {
-                get; init;
-            }
-
-            required public Exception Exception {
-                get; init;
-            }
-        }
-
-        public delegate void ExceptionReportEvent(object sender, ExceptionMessageEventArgs args);
-
-        public static event ExceptionReportEvent? ExceptionReporters;
-
         public ExceptionReporting() {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Application.ThreadException += OnThreadException;
-            ExceptionReporters += TraceException;
-
         }
 
         public void Dispose() {
-            ExceptionReporters -= TraceException;
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            Application.ThreadException += OnThreadException;
+            AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+            Application.ThreadException -= OnThreadException;
         }
 
         private void OnThreadException(object sender, ThreadExceptionEventArgs e) {
@@ -43,7 +26,7 @@ namespace EnergiePrijzen {
             if (exception is not null) {
                 ReportExceptionAndCause(exception);
             } else {
-                Trace.WriteLine("Unknown exception");
+                Tracer.Trace("Unknown exception");
             }
         }
 
@@ -58,7 +41,7 @@ namespace EnergiePrijzen {
             if (exception is not null) {
                 ReportExceptionAndCause(exception);
             } else {
-                Trace.WriteLine("Unknown exception");
+                Tracer.Trace("Unknown exception");
             }
         }
 
@@ -71,20 +54,12 @@ namespace EnergiePrijzen {
         }
 
         private void ReportException(string cause, Exception exception) {
-            ExceptionReporters?.Invoke(
-                this, 
-                new ExceptionMessageEventArgs {
-                    Message = cause,
-                    Exception = exception
-                }
-            );
-        }
-
-        private void TraceException(object sender, ExceptionMessageEventArgs args) {
-            var exception = args.Exception;
-            var cause = args.Message;
-            Trace.WriteLine(cause + " " + exception.GetType().Name + ": " + exception.Message);
-            Trace.WriteLine(exception.StackTrace);
+            Tracer.Trace(cause + " " + exception.GetType().Name + ": " + exception.Message);
+            var stack = exception.StackTrace;
+            if (stack is null) {
+                stack = "<no stack>";
+            }
+            Tracer.Trace(stack);
         }
     }
 }
