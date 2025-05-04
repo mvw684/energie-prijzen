@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 using CH = CsvHelper;
 
@@ -10,22 +11,27 @@ namespace EnergiePrijzen.Data.Csv {
     
     internal class CsvReader : IDisposable {
 
-        private readonly string[]? header; 
-        private CH.CsvReader? reader;
+        private readonly string[]? header;
+        private string[]? currentRowData;
+        private FileInfo file;
+        private int currentRowNumber = 0;
+        private CH.CsvParser? parser;
+
         private readonly CH.Configuration.CsvConfiguration config = new CH.Configuration.CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture) {
             Delimiter = ";",
             HasHeaderRecord = true,
         };
-        public CsvReader(FileInfo file) {
-
+        public CsvReader(FileInfo file, string delimiter) {
+            this.file = file;
             config = new CH.Configuration.CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture) {
-                Delimiter = ";",
+                Delimiter = delimiter,
                 HasHeaderRecord = true,
                 DetectDelimiter = false,
             };
-            reader = new CH.CsvReader(new StreamReader(file.FullName), config);
-            if (reader.Read() && reader.ReadHeader()) {
-                header = reader.HeaderRecord;
+            parser = new CH.CsvParser(new StreamReader(file.FullName), config, leaveOpen:false);
+            if (parser.Read()) {
+                currentRowNumber++;
+                header = parser.Record;
             }
         }
 
@@ -34,12 +40,17 @@ namespace EnergiePrijzen.Data.Csv {
         public string[] Header => header ?? throw new InvalidOperationException("Header not read");
 
         public bool Read(out string[] row) {
-            if (reader is null) {
-                throw new InvalidOperationException("Reader is disposed");
+            if (parser is null) {
+                throw new ObjectDisposedException($"Csv Reader {file.FullName} is disposed");
             }
-            if (reader.Read()) {
-                row = reader.GetRecord<string[]>();
-                return true;
+            if (parser.Read()) {
+                currentRowData = parser.Record;
+                if (currentRowData != null) {
+                    row = currentRowData;
+                    return true;
+                }
+                row = Array.Empty<string>();
+                return false;
             } else {
                 row = Array.Empty<string>();
                 return false;
@@ -47,9 +58,36 @@ namespace EnergiePrijzen.Data.Csv {
         }
 
         public void Dispose() {
-            if (reader != null) {
-                reader.Dispose();
-                reader = null;
+            if (parser != null) {
+                parser.Dispose();
+                parser = null;
+            }
+        }
+
+        internal void ThrowInvalidRow(string error) {
+            var message = "Invalid row "  + error + " " + string.Join(", ", currentRowData ?? Array.Empty<string>()) + "' in " + file.FullName + "@" + currentRowNumber;
+            Tracer.Trace(message);
+            throw new InvalidDataException(message);
+        }
+
+        internal void ThrowInvalidheader(string error){
+            var message = "Invalid header '" + error + " " + string.Join(", ", header ?? Array.Empty<string>()) + "' in " + file.FullName;
+            Tracer.Trace(message);
+            throw new InvalidDataException(message);
+        }
+
+        internal void CheckHeader(params string[] expectedheader) {
+            if (!Hasheader) {
+                ThrowInvalidheader("missing header");
+            }
+            var header = Header;
+            if (header.Length != expectedheader.Length) {
+                ThrowInvalidheader($"expecting {expectedheader.Length} fields");
+            }
+            for (int i = 0; i < expectedheader.Length; i++) {
+                if (header[i] != expectedheader[i]) {
+                    ThrowInvalidheader($"expecting {string.Join(config.Delimiter, expectedheader)}, actual {string.Join(config.Delimiter, header)} ");
+                }
             }
         }
     }

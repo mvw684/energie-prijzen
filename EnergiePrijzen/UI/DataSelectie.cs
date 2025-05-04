@@ -23,12 +23,12 @@ namespace EnergiePrijzen.UI
             slimmeMeterFolder.Text = settings.SlimmeMeter;
             sessyFolder.Text = settings.Sessy;
             resultaatFolder.Text = settings.Resultaat;
-            if(settings.PeriodeStart.TryParseDate(out TimeStamp? start)) {
+            if (settings.PeriodeStart.TryParseDate(out TimeStamp? start)) {
                 periodeStart.Value = start.Value.Start;
             } else {
                 periodeStart.Value = new DateTime(DateTime.Now.Year - 1, 1, 1);
             }
-            if(settings.PeriodeEnd.TryParseDate(out TimeStamp? end)) {
+            if (settings.PeriodeEnd.TryParseDate(out TimeStamp? end)) {
                 periodeEnd.Value = end.Value.Start;
             } else {
                 periodeEnd.Value = new DateTime(DateTime.Now.Year, 1, 1);
@@ -53,7 +53,7 @@ namespace EnergiePrijzen.UI
         }
 
         private void OnSaveClick(object sender, EventArgs e) {
-            if(UpdateSettings()) {
+            if (UpdateSettings()) {
                 settings.Save();
             }
         }
@@ -63,7 +63,7 @@ namespace EnergiePrijzen.UI
                 try {
                     executing = true;
                     var generator = new DataGenerator(settings);
-                    if(!generator.GenerateData()) {
+                    if (!generator.GenerateData()) {
                         var _ = MessageBox.Show("Data generatie mislukt", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 } finally {
@@ -73,7 +73,7 @@ namespace EnergiePrijzen.UI
         }
 
         bool UpdateSettings() {
-            if(ValidateValues()) {
+            if (ValidateValues()) {
                 string jeroenValue = jeroenFolder.Text;
                 string solaredgeValue = solaredgeFolder.Text;
                 string slimmeMeterValue = slimmeMeterFolder.Text;
@@ -116,7 +116,7 @@ namespace EnergiePrijzen.UI
             DateTime end, string startName,
             string endName
         ) {
-            if(end <= start) {
+            if (end <= start) {
                 _ = MessageBox.Show($"{endName} moet na {startName} zijn", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -124,11 +124,11 @@ namespace EnergiePrijzen.UI
         }
 
         private static bool ValidateValue(string folder, string name) {
-            if(string.IsNullOrEmpty(folder)) {
+            if (string.IsNullOrEmpty(folder)) {
                 _ = MessageBox.Show($"{name} is niet ingevuld", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            if(!Directory.Exists(folder)) {
+            if (!Directory.Exists(folder)) {
                 _ = MessageBox.Show($"{name} bestaat niet", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -137,37 +137,41 @@ namespace EnergiePrijzen.UI
 
         private void OpenJeroen(object sender, System.EventArgs e) {
             string jeroenValue = jeroenFolder.Text;
-            if(ValidateValue(jeroenValue, "Jeroen prijzen folder")) {
+            if (ValidateValue(jeroenValue, "Jeroen prijzen folder")) {
                 _ = Process.Start("explorer.exe", jeroenValue);
             }
         }
 
         private void OpenSolarEdge(object sender, System.EventArgs e) {
             string solaredgeValue = solaredgeFolder.Text;
-            if(ValidateValue(solaredgeValue, "Solar Edge download folder")) {
+            if (ValidateValue(solaredgeValue, "Solar Edge download folder")) {
                 _ = Process.Start("explorer.exe", solaredgeValue);
             }
         }
 
         private void OpenSlimmeMeter(object sender, System.EventArgs e) {
             string slimmeMeterValue = slimmeMeterFolder.Text;
-            if(ValidateValue(slimmeMeterValue, "Slimme meter download folder")) {
+            if (ValidateValue(slimmeMeterValue, "Slimme meter download folder")) {
                 _ = Process.Start("explorer.exe", slimmeMeterValue);
             }
         }
 
         private void OpenSessy(object sender, System.EventArgs e) {
             string sessyFolderValue = sessyFolder.Text;
-            if(ValidateValue(sessyFolderValue, "Sessy download folder")) {
+            if (ValidateValue(sessyFolderValue, "Sessy download folder")) {
                 _ = Process.Start("explorer.exe", sessyFolderValue);
             }
         }
 
         private void OpenResultaat(object sender, System.EventArgs e) {
             string resultaatFolderValue = resultaatFolder.Text;
-            if(ValidateValue(resultaatFolderValue, "Resultaat folder")) {
+            if (ValidateValue(resultaatFolderValue, "Resultaat folder")) {
                 _ = Process.Start("explorer.exe", resultaatFolderValue);
             }
+        }
+
+        private void ShowSettings(object sender, EventArgs e) {
+            _ = Process.Start("explorer.exe", SettingsReader.SettingsDirectory.FullName);
         }
     }
 }

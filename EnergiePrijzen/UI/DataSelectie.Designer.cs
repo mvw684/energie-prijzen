@@ -46,6 +46,7 @@ namespace EnergiePrijzen.UI
             periodeStart = new DateTimePicker();
             periodeEnd = new DateTimePicker();
             textLog = new TextBox();
+            showSettings = new Button();
             SuspendLayout();
             // 
             // jeroenLabel
@@ -85,7 +86,7 @@ namespace EnergiePrijzen.UI
             jeroenFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
             jeroenFolder.Location = new Point(81, 37);
             jeroenFolder.Name = "jeroenFolder";
-            jeroenFolder.Size = new Size(707, 23);
+            jeroenFolder.Size = new Size(938, 23);
             jeroenFolder.TabIndex = 3;
             // 
             // solaredgeFolder
@@ -95,7 +96,7 @@ namespace EnergiePrijzen.UI
             solaredgeFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
             solaredgeFolder.Location = new Point(81, 62);
             solaredgeFolder.Name = "solaredgeFolder";
-            solaredgeFolder.Size = new Size(707, 23);
+            solaredgeFolder.Size = new Size(938, 23);
             solaredgeFolder.TabIndex = 4;
             // 
             // slimmeMeterFolder
@@ -105,13 +106,13 @@ namespace EnergiePrijzen.UI
             slimmeMeterFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
             slimmeMeterFolder.Location = new Point(81, 87);
             slimmeMeterFolder.Name = "slimmeMeterFolder";
-            slimmeMeterFolder.Size = new Size(707, 23);
+            slimmeMeterFolder.Size = new Size(938, 23);
             slimmeMeterFolder.TabIndex = 5;
             // 
             // save
             // 
             save.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            save.Location = new Point(632, 164);
+            save.Location = new Point(863, 164);
             save.Name = "save";
             save.Size = new Size(75, 23);
             save.TabIndex = 6;
@@ -123,7 +124,7 @@ namespace EnergiePrijzen.UI
             // compute
             // 
             compute.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            compute.Location = new Point(713, 164);
+            compute.Location = new Point(944, 164);
             compute.Name = "compute";
             compute.Size = new Size(75, 23);
             compute.TabIndex = 7;
@@ -148,7 +149,7 @@ namespace EnergiePrijzen.UI
             sessyFolder.AutoCompleteSource = AutoCompleteSource.FileSystemDirectories;
             sessyFolder.Location = new Point(81, 111);
             sessyFolder.Name = "sessyFolder";
-            sessyFolder.Size = new Size(707, 23);
+            sessyFolder.Size = new Size(938, 23);
             sessyFolder.TabIndex = 9;
             // 
             // labelResultaat
@@ -166,7 +167,7 @@ namespace EnergiePrijzen.UI
             resultaatFolder.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             resultaatFolder.Location = new Point(81, 135);
             resultaatFolder.Name = "resultaatFolder";
-            resultaatFolder.Size = new Size(707, 23);
+            resultaatFolder.Size = new Size(938, 23);
             resultaatFolder.TabIndex = 11;
             // 
             // labelPeriode
@@ -180,7 +181,6 @@ namespace EnergiePrijzen.UI
             // 
             // periodeStart
             // 
-            periodeStart.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             periodeStart.CustomFormat = "yyyy-MM-dd";
             periodeStart.Format = DateTimePickerFormat.Custom;
             periodeStart.Location = new Point(82, 13);
@@ -190,12 +190,11 @@ namespace EnergiePrijzen.UI
             // 
             // periodeEnd
             // 
-            periodeEnd.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             periodeEnd.CustomFormat = "yyyy-MM-dd";
             periodeEnd.Format = DateTimePickerFormat.Custom;
             periodeEnd.Location = new Point(234, 13);
             periodeEnd.Name = "periodeEnd";
-            periodeEnd.Size = new Size(146, 23);
+            periodeEnd.Size = new Size(160, 23);
             periodeEnd.TabIndex = 14;
             // 
             // textLog
@@ -206,14 +205,28 @@ namespace EnergiePrijzen.UI
             textLog.Multiline = true;
             textLog.Name = "textLog";
             textLog.ReadOnly = true;
-            textLog.Size = new Size(786, 255);
+            textLog.ScrollBars = ScrollBars.Both;
+            textLog.Size = new Size(1017, 255);
             textLog.TabIndex = 15;
+            textLog.WordWrap = false;
+            // 
+            // showSettings
+            // 
+            showSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            showSettings.Location = new Point(760, 164);
+            showSettings.Name = "showSettings";
+            showSettings.Size = new Size(97, 23);
+            showSettings.TabIndex = 16;
+            showSettings.Text = "Show Settings";
+            showSettings.UseVisualStyleBackColor = true;
+            showSettings.Click += ShowSettings;
             // 
             // DataSelectie
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1031, 450);
+            Controls.Add(showSettings);
             Controls.Add(textLog);
             Controls.Add(periodeEnd);
             Controls.Add(periodeStart);
@@ -254,5 +267,6 @@ namespace EnergiePrijzen.UI
         private DateTimePicker periodeStart;
         private DateTimePicker periodeEnd;
         private TextBox textLog;
+        private Button showSettings;
     }
 }

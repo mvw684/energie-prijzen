@@ -13,8 +13,6 @@ namespace EnergiePrijzen.Data {
             init => timestamp = value;
         }
 
-        public static TData Aggregate(List<TData> data) => throw new NotImplementedException();
-
         public void Add(TData item) {
             if (item.TimeStamp != timestamp) {
                 throw new ArgumentException("All data must have the same timestamp.");
@@ -22,11 +20,19 @@ namespace EnergiePrijzen.Data {
             data.Add(item);
         }
 
-        public virtual TData AggregateData() {
+        public virtual void Aggregate() {
             if (data.Count == 0) {
                 throw new ArgumentException("No data to aggregate");
             }
-            return TData.Aggregate(data);
+            if (data.Count == 1) {
+                SetAggregateResult(data[0]);
+            } else {
+                SetAggregateResult(Aggregate(data));
+            }
         }
+
+        public abstract TData Aggregate(List<TData> data);
+            
+        public abstract void SetAggregateResult(TData data);
     }
 }

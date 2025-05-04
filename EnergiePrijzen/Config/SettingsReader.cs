@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2025 mvw684
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -13,11 +12,12 @@ namespace EnergiePrijzen.Config {
 
         private const string configFileName = "Settings.json";
 
+        internal static DirectoryInfo SettingsDirectory => settingsDirectory;
+
         static SettingsReader() {
             if (!settingsDirectory.Exists) {
                 settingsDirectory.Create();
             }
-            _ = Process.Start("explorer.exe", settingsDirectory.FullName);
         }
 
         public static void Save(this Settings settings) {
