@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using EnergiePrijzen.Config;
+using EnergiePrijzen.Data.Apparaten;
 using EnergiePrijzen.Data.Prijzen;
 
 namespace EnergiePrijzen.Data {
@@ -21,11 +22,13 @@ namespace EnergiePrijzen.Data {
             if (!settings.PeriodeEnd.TryParseDate(out var end)) {
                 return false;
             }
-
             TimeSpan duration = TimeStamp.Duration;
-            var ts = start;
-            while(ts < end) {
-                timeStamps.Add(ts.Value);
+            // adding as universal time to filter out the daylight saving time gaps/jumps
+            var startDateTime = start.Value.Start.ToUniversalTime();
+            var ts = startDateTime;
+            var endDateTime = end.Value.Start.ToUniversalTime();
+            while (ts < endDateTime) {
+                timeStamps.Add(new TimeStamp(ts));
                 ts += duration;
             }
 
@@ -35,9 +38,13 @@ namespace EnergiePrijzen.Data {
             if(!prijzen.Load(out var dynamischePrijzen)) {
                 return false;
             }
-            foreach (var prijs in dynamischePrijzen) {
-                Console.WriteLine($"Prijs: {prijs}");
+            
+            var slimmeMeter = new SlimmeMeter(inputData);
+            if (!slimmeMeter.Load(out var meterData)) {
+                return false;
             }
+
+            // TODO: merge mter + prijzen
             return true;
         }
     }

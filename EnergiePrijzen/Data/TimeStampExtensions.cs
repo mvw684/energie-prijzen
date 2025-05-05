@@ -11,10 +11,6 @@ namespace EnergiePrijzen.Data {
         private readonly static string[] dateFormats = [TimeStampExtensions.DateFormat];
 
 
-        public static DateTime ToStamp(this DateTime dateTime) {
-            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0, 0, DateTimeKind.Local);
-        }
-
         public static bool TryParseDate(this string dateString, [NotNullWhen(true)] out TimeStamp? timeStamp) {
             if(DateTime.TryParseExact(dateString, dateFormats, null, System.Globalization.DateTimeStyles.AssumeLocal, out DateTime dateTime)) {
                 timeStamp = new TimeStamp(dateTime);

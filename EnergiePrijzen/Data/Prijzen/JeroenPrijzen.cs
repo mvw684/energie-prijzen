@@ -35,8 +35,31 @@ namespace EnergiePrijzen.Data.Prijzen {
             result &= LoadGasPrijzen(folder);
             result &= AggregateStromPrijzen();
             result &= AggregateGasPrijzen();
+            result &= ConsolidatePrijzen(dynamischePrijzen);
             Tracer.Trace("Loading jeroen prijzen " + (result ? "succeeded" : "failed"));
             return result;
+        }
+
+        private bool ConsolidatePrijzen(TimeStampedDataList<DynamischePrijs> dynamischePrijzen) {
+
+            foreach (var stamp in inputData.TimeStamps) {
+                if (!gasPrijzen.TryGet(stamp, out var gasPrijs)) {
+                    Tracer.Trace("Missing gas prijs for " + stamp);
+                    return false;
+                }
+                if (!stroomPrijzen.TryGet(stamp, out var stroomPrijs)) {
+                    Tracer.Trace("Missing stroom prijs for " + stamp);
+                    return false;
+                }
+                try {
+                    var dynamischePrijs = new DynamischePrijs() { TimeStamp = stamp, KwHPrijs = stroomPrijs.KwHPrijs, M3Prijs = gasPrijs.M3Prijs };
+                    dynamischePrijzen.Add(dynamischePrijs);
+                } catch (Exception e) {
+                    Tracer.Trace("Failed to create dynamische prijs for " + stamp + ": " + e.Message);
+                    return false;
+                }
+            }
+            return true;
         }
 
         private bool AggregateGasPrijzen() {
@@ -121,12 +144,19 @@ namespace EnergiePrijzen.Data.Prijzen {
                             continue;
                         }
                         if (double.TryParse(prijsString, numberStyles, dutch, out double prijs)) {
-                            var gasPrijs = new GasPrijs { TimeStamp = stamp.Value, M3Prijs = prijs };
-                            if (!gasPrijzen.TryGet(stamp.Value, out var existing)) {
-                                existing = new GasPrijs { TimeStamp = stamp.Value };
-                                gasPrijzen.Add(existing);
+                            // gasprijzen zijn per dag. so need to add each hour.
+                            var end = stamp + TimeSpan.FromHours(24);
+                            while(stamp < end) {
+                                // gasprijzen zijn per dag. so need to add each hour / timestamp duration.
+
+                                var gasPrijs = new GasPrijs { TimeStamp = stamp.Value, M3Prijs = prijs };
+                                if (!gasPrijzen.TryGet(stamp.Value, out var existing)) {
+                                    existing = new GasPrijs { TimeStamp = stamp.Value };
+                                    gasPrijzen.Add(existing);
+                                }
+                                existing.Add(gasPrijs);
+                                stamp += TimeStamp.Duration;
                             }
-                            existing.Add(gasPrijs);
                         } else {
                             reader.ThrowInvalidRow("Failed to parse prijs " + prijsString);
                         }

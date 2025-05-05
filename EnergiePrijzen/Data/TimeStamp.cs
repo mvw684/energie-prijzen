@@ -11,7 +11,14 @@ namespace EnergiePrijzen.Data {
         private static readonly DateTime zero = new DateTime(2020, 1, 1);
         
         public TimeStamp(DateTime start) {
-            this.start = start.ToStamp();
+            var asStamp = new DateTime(start.Year, start.Month, start.Day, start.Hour, 0, 0, 0, start.Kind);
+            if (asStamp.Kind == DateTimeKind.Local) {
+                this.start = asStamp;
+            } else if (asStamp.Kind == DateTimeKind.Utc) {
+                this.start = asStamp.ToLocalTime();
+            } else {
+                throw new ArgumentException(asStamp.Kind + "unexpected", nameof(start));
+            }
         }
 
         public readonly DateTime Start {
@@ -24,7 +31,7 @@ namespace EnergiePrijzen.Data {
             get => duration;
         }
 
-        public override string ToString() => start.ToString("yyyy-MM-dd HH");
+        public override string ToString() => start.ToString("yyyy-MM-dd HH") + " / " + start.ToLocalTime().ToString("yyyy-MM-dd HH");
 
         public override int GetHashCode() => (int)((start - zero).TotalMinutes);
 
