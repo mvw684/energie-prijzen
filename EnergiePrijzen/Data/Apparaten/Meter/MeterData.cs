@@ -6,6 +6,7 @@ namespace EnergiePrijzen.Data.Apparaten.Meter {
         private double m3gas;
         private double kwhVerbruik;
         private double kwhTeruglevering;
+        private double temperatuur;
 
         public required double KwhVerbruik {
             get => kwhVerbruik;
@@ -20,6 +21,11 @@ namespace EnergiePrijzen.Data.Apparaten.Meter {
         public required double M3Gas {
             init => m3gas = value;
             get => m3gas;
+        }
+
+        public required double Temperatuur {
+            get => temperatuur;
+            init => temperatuur = value;
         }
     }
 }

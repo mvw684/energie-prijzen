@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 using EnergiePrijzen.Data.Apparaten.Meter;
 using EnergiePrijzen.Data.Csv;
+using EnergiePrijzen.Data.Prijzen;
 
 namespace EnergiePrijzen.Data.Apparaten {
     internal class SlimmeMeter {
@@ -50,15 +51,34 @@ namespace EnergiePrijzen.Data.Apparaten {
             }
             result &= gasData.Aggregate();
             result &= stroomData.Aggregate();
-            result &= Consolidate(meterData, gasData, stroomData);
+            result &= ConsolidateMeterData(meterData, gasData, stroomData);
             return result;
         }
 
-        private bool Consolidate(
+        private bool ConsolidateMeterData(
             TimeStampedDataList<MeterData> meterData, 
             TimeStampedDataList<GasData> gasData, 
             TimeStampedDataList<StroomData> stroomData
-        ) => throw new NotImplementedException();
+        ) {
+            foreach (var stamp in inputData.TimeStamps) {
+                if (!gasData.TryGet(stamp, out var gas)) {
+                    Tracer.Trace("Missing gas data for " + stamp);
+                    return false;
+                }
+                if (!stroomData.TryGet(stamp, out var stroom)) {
+                    Tracer.Trace("Missing stroom data for " + stamp);
+                    return false;
+                }
+                try {
+                    var meter = new MeterData() { TimeStamp = stamp, M3Gas = gas.M3, KwhVerbruik = stroom.KwhVerbruik, KwhTeruglevering = stroom.KwhTeruglevering, Temperatuur = gas.Temperatuur };
+                    meterData.Add(meter);
+                } catch (Exception e) {
+                    Tracer.Trace("Failed to create dynamische prijs for " + stamp + ": " + e.Message);
+                    return false;
+                }
+            }
+            return true;
+        }
 
         private bool ReadGasverbruik(
             ExcelReader reader, 
