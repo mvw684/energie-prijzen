@@ -125,7 +125,7 @@ namespace EnergiePrijzen.Data.Prijzen {
                     if (!inputData.TimeStamps.Contains(stamp.Value)) {
                         continue;
                     }
-                    if (prijsString.TryParseDutch(out double prijs)) {
+                    if (!prijsString.TryParseDutch(out double prijs)) {
                         throw reader.InvalidRow("Failed to parse prijs " + prijsString);
                     }
                     // gasprijzen zijn per dag. so need to add each hour/timestamp duration

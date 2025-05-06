@@ -39,13 +39,13 @@ namespace EnergiePrijzen.Data.Csv {
         }
 
         internal InvalidDataException InvalidRow(string error) {
-            var message = "Invalid row " + error + " " + string.Join(", ", currentRowData ?? Array.Empty<string>()) + "' in " + file.FullName + "@" + currentRowNumber;
+            var message = "Invalid row " + error + ", row data: " + string.Join(", ", currentRowData ?? Array.Empty<string>()) + "' in " + file.FullName + "@" + currentRowNumber;
             Tracer.Trace(message);
             return new InvalidDataException(message);
         }
 
         internal InvalidDataException Invalidheader(string error) {
-            var message = "Invalid header '" + error + " " + string.Join(", ", header ?? Array.Empty<string>()) + "' in " + file.FullName;
+            var message = "Invalid header '" + error + ", header: " + string.Join(", ", header ?? Array.Empty<string>()) + "' in " + file.FullName;
             Tracer.Trace(message);
             return new InvalidDataException(message);
         }

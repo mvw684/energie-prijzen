@@ -12,10 +12,8 @@ namespace EnergiePrijzen.Data.Csv {
 
         private CH.CsvParser? parser;
 
-        private readonly CH.Configuration.CsvConfiguration config = new CH.Configuration.CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture) {
-            Delimiter = ";",
-            HasHeaderRecord = true,
-        };
+        private readonly CH.Configuration.CsvConfiguration config;
+
         public CsvReader(FileInfo file, string delimiter) : base(file) {
             config = new CH.Configuration.CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture) {
                 Delimiter = delimiter,
@@ -37,6 +35,7 @@ namespace EnergiePrijzen.Data.Csv {
                 throw new ObjectDisposedException($"Csv Reader {File.FullName} is disposed");
             }
             if (parser.Read()) {
+                CurrentRowNumber++;
                 var currentRowData = parser.Record;
                 if (currentRowData != null) {
                     row = currentRowData;

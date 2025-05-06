@@ -44,7 +44,7 @@ namespace EnergiePrijzen.Data {
                 return false;
             }
 
-            // TODO: merge mter + prijzen
+            // TODO: merge meter + prijzen
             return true;
         }
     }

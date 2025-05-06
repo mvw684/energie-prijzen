@@ -1,15 +1,12 @@
 ﻿// Copyright (c) 2025 mvw684
 
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq.Expressions;
 
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 
 using EnergiePrijzen.Data.Apparaten.Meter;
 using EnergiePrijzen.Data.Csv;
-using EnergiePrijzen.Data.Prijzen;
 
 namespace EnergiePrijzen.Data.Apparaten {
     internal class SlimmeMeter {
@@ -33,15 +30,20 @@ namespace EnergiePrijzen.Data.Apparaten {
             bool result = true;
             var gasData = new TimeStampedDataList<GasData>();
             var stroomData = new TimeStampedDataList<StroomData>();
-            foreach (var fileInfo in meterFolder.EnumerateFiles("*.xls", SearchOption.TopDirectoryOnly)) {
+            foreach (var fileInfo in meterFolder.EnumerateFiles("*.xlsx", SearchOption.TopDirectoryOnly)) {
                 try {
                     using (var reader = new ExcelReader(fileInfo)) {
                         var header = reader.Header;
                         GC.KeepAlive(header);
                         if (header.Length == 3) {
+                            Tracer.Trace($"Reading gas verbruik {fileInfo.FullName}: {string.Join(", ", header)}");
                             result &= ReadGasverbruik(reader, gasData);
-                        } else {
+                        } else if (header.Length == 6) {
+                            Tracer.Trace($"Reading stroom verbruik {fileInfo.FullName}: {string.Join(", ", header)}");
                             result &= ReadStroomVerbruik(reader, stroomData);
+                        } else {
+                            Tracer.Trace($"Skipping {fileInfo.FullName}: {string.Join(", ", header)}");
+                            result = false;
                         }
                     }
                 } catch (Exception ex) {
