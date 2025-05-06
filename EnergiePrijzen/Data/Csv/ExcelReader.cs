@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 using DocumentFormat.OpenXml.Spreadsheet;
 
@@ -25,6 +26,7 @@ namespace EnergiePrijzen.Data.Csv {
             if (headerRow is not null) {
                 var header = GetStringValues(headerRow);
                 Header = header;
+                CurrentRowNumber = 1;
             }
         }
 
@@ -48,7 +50,11 @@ namespace EnergiePrijzen.Data.Csv {
         }
 
         private string[] GetStringValues(Excel.IXLRow excelRow) {
-            int cellCount = excelRow.CellCount();
+            
+            var used = excelRow.CellsUsed();
+            var lastUsed = used.LastOrDefault();
+            var column = lastUsed?.Address.ColumnNumber ?? 0;
+            var cellCount = column;
             var row = new string[cellCount];
             for (int i = 0; i < cellCount; i++) {
                 var cell = excelRow.Cell(i + 1);

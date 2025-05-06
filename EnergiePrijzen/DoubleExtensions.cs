@@ -15,5 +15,13 @@ namespace EnergiePrijzen {
                 throw new FormatException($"Invalid double format: {value}");
             }
         }
+
+        public static bool TryParseDutchAllowEmpty(this string valueAsString, out double value) {
+            if (string.IsNullOrEmpty(valueAsString)) {
+                value = 0d;
+                return true;
+            }
+            return valueAsString.TryParseDutch(out value);
+        }
     }
 }

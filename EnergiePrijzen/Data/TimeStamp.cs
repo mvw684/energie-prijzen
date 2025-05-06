@@ -31,7 +31,7 @@ namespace EnergiePrijzen.Data {
             get => duration;
         }
 
-        public override string ToString() => start.ToString("yyyy-MM-dd HH") + " / " + start.ToLocalTime().ToString("yyyy-MM-dd HH");
+        public override string ToString() => "Local = " + start.ToLocalTime().ToString("O") + " / utc = " + start.ToUniversalTime().ToString("O");
 
         public override int GetHashCode() => (int)((start - zero).TotalMinutes);
 

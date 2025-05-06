@@ -17,9 +17,11 @@ namespace EnergiePrijzen.Data.Apparaten {
         public SlimmeMeter(InputData inputData) => this.inputData = inputData;
 
         public bool Load(out TimeStampedDataList<MeterData> meterData) {
+            Tracer.Trace("Loading slimme meter data");
             meterData = new TimeStampedDataList<MeterData>();
             var meterFolder = new DirectoryInfo(inputData.Settings.SlimmeMeter);
             bool result = ReadMeterData(meterFolder, meterData);
+            Tracer.Trace("Loading slimme meter data" + (result ? "succeeded" : "failed"));
             return result;
         }
 
@@ -168,19 +170,18 @@ namespace EnergiePrijzen.Data.Apparaten {
                     if (!inputData.TimeStamps.Contains(stamp)) {
                         continue;
                     }
-                    if (!leveringNormaalString.TryParseDutch(out double leveringNormaal)) {
+                    if (!leveringNormaalString.TryParseDutchAllowEmpty(out double leveringNormaal)) {
                         throw reader.InvalidRow("Failed to parse levering normaal: " + leveringNormaalString);
                     }
-                    if (!leveringLaagString.TryParseDutch(out double leveringLaag)) {
+                    if (!leveringLaagString.TryParseDutchAllowEmpty(out double leveringLaag)) {
                         throw reader.InvalidRow("Failed to parse levering laag: " + leveringLaagString);
                     }
-                    if (!terugleveringNormaalString.TryParseDutch(out double terugLeveringNormaal)) {
+                    if (!terugleveringNormaalString.TryParseDutchAllowEmpty(out double terugLeveringNormaal)) {
                         throw reader.InvalidRow("Failed to parse terug levering normaal: " + terugleveringNormaalString);
                     }
-                    if (!terugleveringLaagString.TryParseDutch(out double terugLeveringLaag)) {
+                    if (!terugleveringLaagString.TryParseDutchAllowEmpty(out double terugLeveringLaag)) {
                         throw reader.InvalidRow("Failed to parse terug levering laag: " + terugleveringLaagString);
                     }
-
                     var stroom = new StroomData { TimeStamp = stamp, KwhVerbruik = leveringNormaal + leveringLaag, KwhTeruglevering = terugLeveringLaag + terugLeveringNormaal };
                     if (!stroomData.TryGet(stamp, out var existing)) {
                         existing = new StroomData { TimeStamp = stamp };
@@ -194,5 +195,7 @@ namespace EnergiePrijzen.Data.Apparaten {
             }
             return true;
         }
+
+        
     }
 }
