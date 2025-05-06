@@ -3,8 +3,6 @@
 using System;
 using System.IO;
 
-using DocumentFormat.OpenXml.Drawing.Diagrams;
-
 using EnergiePrijzen.Data.Apparaten.Meter;
 using EnergiePrijzen.Data.Csv;
 
@@ -67,11 +65,22 @@ namespace EnergiePrijzen.Data.Apparaten {
             foreach (var stamp in inputData.TimeStamps) {
                 if (!gasData.TryGet(stamp, out var gas)) {
                     Tracer.Trace("Missing gas data for " + stamp);
-                    return false;
+                    // sometimes on DST changes mismatches occur
+                    var fallback = stamp + TimeStamp.Duration;
+                    if (!gasData.TryGet(fallback, out gas)) {
+                        return false;
+                    } else {
+                        Tracer.Trace("Using fallback from " + fallback);
+                    }
                 }
                 if (!stroomData.TryGet(stamp, out var stroom)) {
                     Tracer.Trace("Missing stroom data for " + stamp);
-                    return false;
+                    var fallback = stamp + TimeStamp.Duration;
+                    if (!stroomData.TryGet(stamp, out stroom)) {
+                        return false;
+                    } else {
+                        Tracer.Trace("Using fallback from " + fallback);
+                    }
                 }
                 try {
                     var meter = new MeterData() { TimeStamp = stamp, M3Gas = gas.M3, KwhVerbruik = stroom.KwhVerbruik, KwhTeruglevering = stroom.KwhTeruglevering, Temperatuur = gas.Temperatuur };
@@ -109,8 +118,9 @@ namespace EnergiePrijzen.Data.Apparaten {
                         }
                         deltaChecked = true;
                     }
-
-                    var stamp = new TimeStamp(dateTime.Value - delta);
+                    // dateTime - delta is a problem on daylight saving time switched, sometimes you need to jump an additional hour
+                    // hence first conver to UTC then subtract, them convert back to local time
+                    var stamp = new TimeStamp(dateTime.Value.ToUniversalTime() - delta);
                     if (!inputData.TimeStamps.Contains(stamp)) {
                         continue;
                     }
@@ -169,7 +179,9 @@ namespace EnergiePrijzen.Data.Apparaten {
                         }
                         deltaChecked = true;
                     }
-                    var stamp = new TimeStamp(dateTime.Value - delta);
+                    // dateTime - delta is a problem on daylight saving time switched, sometimes you need to jump an additional hour
+                    // hence first conver to UTC then subtract, them convert back to local time
+                    var stamp = new TimeStamp(dateTime.Value.ToUniversalTime() - delta);
                     if (!inputData.TimeStamps.Contains(stamp)) {
                         continue;
                     }
