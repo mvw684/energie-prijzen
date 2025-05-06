@@ -93,7 +93,7 @@ namespace EnergiePrijzen.Data.Apparaten {
             TimeSpan delta = TimeSpan.FromMinutes(60);
             bool deltaChecked = false;
             try {
-
+                double? previousTemperatuur = null;
                 while (reader.Read(out string[] row)) {
                     var datumTijdString = row[0];
                     var m3String = row[1];
@@ -101,9 +101,7 @@ namespace EnergiePrijzen.Data.Apparaten {
                     if (!datumTijdString.TryParseDateTime(dateTimeFormats, out DateTime? dateTime)) {
                         throw reader.InvalidRow("Failed to parse date time " + datumTijdString);
                     }
-                    if (previous is null) {
-                        previous = dateTime;
-                    } else if (!deltaChecked) {
+                    if (!deltaChecked && previous != null) {
                         if (delta != dateTime.Value - previous.Value) {
                             throw new InvalidDataException(
                                 $"Invalid delta for {datumTijdString} in {reader.File.FullName}"
@@ -119,7 +117,13 @@ namespace EnergiePrijzen.Data.Apparaten {
                     if (!m3String.TryParseDutch(out double m3)) {
                         throw reader.InvalidRow("Failed to parse m3 " + m3String);
                     }
-                    if (!temperatuurString.TryParseDutch(out double temperatuur)) {
+                    double temperatuur;
+                    if (temperatuurString == "-") {
+                        #pragma warning disable CS8629 // Nullable value type may be null.
+                        // from current data this does not (yet) happen
+                        temperatuur = previousTemperatuur.Value;
+                        #pragma warning restore CS8629 // Nullable value type may be null.
+                    } else if (!temperatuurString.TryParseDutch(out temperatuur)) {
                         throw reader.InvalidRow("Failed to parse temperatuur " + temperatuurString);
                     }
                     var gas = new GasData { TimeStamp = stamp, M3 = m3, Temperatuur = temperatuur };
@@ -127,6 +131,8 @@ namespace EnergiePrijzen.Data.Apparaten {
                         existing = new GasData { TimeStamp = stamp };
                         gasData.Add(existing);
                     }
+                    previousTemperatuur = temperatuur;
+                    previous = dateTime;
                     existing.Add(gas);
                 }
             } catch(Exception e) {
@@ -155,9 +161,7 @@ namespace EnergiePrijzen.Data.Apparaten {
                     if (!datumTijdString.TryParseDateTime(dateTimeFormats, out DateTime? dateTime)) {
                         throw reader.InvalidRow("Failed to parse date time " + datumTijdString);
                     }
-                    if (previous is null) {
-                        previous = dateTime;
-                    } else if (!deltaChecked) {
+                    if (!deltaChecked && previous != null) {
                         if (delta != dateTime.Value - previous.Value) {
                             throw new InvalidDataException(
                                 $"Invalid delta for {datumTijdString} in {reader.File.FullName}"
@@ -165,7 +169,6 @@ namespace EnergiePrijzen.Data.Apparaten {
                         }
                         deltaChecked = true;
                     }
-
                     var stamp = new TimeStamp(dateTime.Value - delta);
                     if (!inputData.TimeStamps.Contains(stamp)) {
                         continue;
@@ -187,6 +190,7 @@ namespace EnergiePrijzen.Data.Apparaten {
                         existing = new StroomData { TimeStamp = stamp };
                         stroomData.Add(existing);
                     }
+                    previous = dateTime;
                     existing.Add(stroom);
                 }
             } catch (Exception e) {

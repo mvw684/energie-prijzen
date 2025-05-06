@@ -14,8 +14,9 @@ namespace EnergiePrijzen.Data.Csv {
     /// Simple reader assuming ONE sheet per file
     /// </summary>
     internal class ExcelReader : ReaderBase, IDisposable {
-        Excel.XLWorkbook? workbook;
-        Excel.IXLWorksheet? sheet;
+        private Excel.XLWorkbook? workbook;
+        private Excel.IXLWorksheet? sheet;
+        private readonly int nrOfRows;
         public ExcelReader(FileInfo file) : base(file) {
             workbook = new Excel.XLWorkbook(file.FullName);
             if (workbook.Worksheets.Count > 1) {
@@ -23,6 +24,7 @@ namespace EnergiePrijzen.Data.Csv {
             }
             sheet = workbook.Worksheet(1);
             var headerRow = sheet.FirstRow();
+            nrOfRows = sheet.RowsUsed().Count();
             if (headerRow is not null) {
                 var header = GetStringValues(headerRow);
                 Header = header;
@@ -34,7 +36,7 @@ namespace EnergiePrijzen.Data.Csv {
             if (workbook is null) {
                 throw new ObjectDisposedException($"Excel Reader {File.FullName} is disposed");
             }
-            if (CurrentRowNumber + 1 > sheet?.RowCount()) {
+            if (CurrentRowNumber >= nrOfRows) {
                 row = Array.Empty<string>();
                 return false;
             }
