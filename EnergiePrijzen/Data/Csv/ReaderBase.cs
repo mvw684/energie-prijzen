@@ -38,29 +38,29 @@ namespace EnergiePrijzen.Data.Csv {
             return false;
         }
 
-        internal void ThrowInvalidRow(string error) {
+        internal InvalidDataException InvalidRow(string error) {
             var message = "Invalid row " + error + " " + string.Join(", ", currentRowData ?? Array.Empty<string>()) + "' in " + file.FullName + "@" + currentRowNumber;
             Tracer.Trace(message);
-            throw new InvalidDataException(message);
+            return new InvalidDataException(message);
         }
 
-        internal void ThrowInvalidheader(string error) {
+        internal InvalidDataException Invalidheader(string error) {
             var message = "Invalid header '" + error + " " + string.Join(", ", header ?? Array.Empty<string>()) + "' in " + file.FullName;
             Tracer.Trace(message);
-            throw new InvalidDataException(message);
+            return new InvalidDataException(message);
         }
 
         internal void CheckHeader(params string[] expectedheader) {
             if (!Hasheader) {
-                ThrowInvalidheader("missing header");
+                throw Invalidheader("missing header");
             }
             var header = Header;
             if (header.Length != expectedheader.Length) {
-                ThrowInvalidheader($"expecting {expectedheader.Length} fields");
+                throw Invalidheader($"expecting {expectedheader.Length} fields");
             }
             for (int i = 0; i < expectedheader.Length; i++) {
                 if (header[i] != expectedheader[i]) {
-                    ThrowInvalidheader($"expecting {string.Join(";", expectedheader)}, actual {string.Join(";", header)} ");
+                    throw Invalidheader($"expecting {string.Join(";", expectedheader)}, actual {string.Join(";", header)} ");
                 }
             }
         }

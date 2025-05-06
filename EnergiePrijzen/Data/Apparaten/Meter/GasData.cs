@@ -5,12 +5,12 @@ using System.Collections.Generic;
 namespace EnergiePrijzen.Data.Apparaten.Meter {
     internal class GasData : AggregatableDataBase<GasData> {
 
-        private double m3gas;
+        private double m3;
         private double temperatuur;
 
-        public double M3Gas {
-            get => m3gas;
-            init => m3gas = value;
+        public double M3 {
+            get => m3;
+            init => m3 = value;
         }
 
         public double Temperatuur {

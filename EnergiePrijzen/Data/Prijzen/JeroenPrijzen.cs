@@ -2,7 +2,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 
 using EnergiePrijzen.Data.Csv;
@@ -18,9 +17,6 @@ namespace EnergiePrijzen.Data.Prijzen {
         private const string dateTimeFormat2 = "yyyy-MM-dd HH:mm";
         private readonly static string[] dateTimeFormats = [dateTimeFormat1, dateTimeFormat2];
 
-        private static readonly NumberStyles numberStyles = NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands;
-        private static readonly CultureInfo dutch = new CultureInfo("nl-NL");
-
         public JeroenPrijzen(InputData inputData) => this.inputData = inputData;
 
         internal bool Load([NotNullWhen(true)] out TimeStampedDataList<DynamischePrijs> dynamischePrijzen) {
@@ -33,8 +29,8 @@ namespace EnergiePrijzen.Data.Prijzen {
             var folder = new DirectoryInfo(inputData.Settings.JeroenPrijzen);
             result &= LoadStroomPrijzen(folder);
             result &= LoadGasPrijzen(folder);
-            result &= AggregateStromPrijzen();
-            result &= AggregateGasPrijzen();
+            result &= stroomPrijzen.Aggregate();
+            result &= gasPrijzen.Aggregate();
             result &= ConsolidatePrijzen(dynamischePrijzen);
             Tracer.Trace("Loading jeroen prijzen " + (result ? "succeeded" : "failed"));
             return result;
@@ -62,20 +58,6 @@ namespace EnergiePrijzen.Data.Prijzen {
             return true;
         }
 
-        private bool AggregateGasPrijzen() {
-            foreach (var gasPrijs in gasPrijzen) {
-                gasPrijs.Aggregate();
-            }
-            return true;
-        }
-
-        private bool AggregateStromPrijzen() {
-            foreach (var stroomPrijs in stroomPrijzen) {
-                stroomPrijs.Aggregate();
-            }
-            return true;
-        }
-
         private bool LoadStroomPrijzen(DirectoryInfo folder) {
             foreach (var file in folder.EnumerateFiles("*stroomprijzen*.csv", SearchOption.TopDirectoryOnly)) {
                 try {
@@ -98,23 +80,21 @@ namespace EnergiePrijzen.Data.Prijzen {
                     var datumString = row[0];
                     var prijsString = row[1];
 
-                    if (datumString.TryParseDateTime(dateTimeFormats, out TimeStamp? stamp)) {
-                        if (!inputData.TimeStamps.Contains(stamp.Value)) {
-                            continue;
-                        }
-                        if (double.TryParse(prijsString, numberStyles, dutch, out double prijs)) {
-                            var stroomPrijs = new StroomPrijs { TimeStamp = stamp.Value, KwHPrijs = prijs };
-                            if (!stroomPrijzen.TryGet(stamp.Value, out var existing)) {
-                                existing = new StroomPrijs { TimeStamp = stamp.Value };
-                                stroomPrijzen.Add(existing);
-                            }
-                            existing.Add(stroomPrijs);
-                        } else {
-                            reader.ThrowInvalidRow("Failed to parse prijs " + prijsString);
-                        }
-                    } else {
-                        reader.ThrowInvalidRow("Failed to parse date time " + datumString);
+                    if (!datumString.TryParseDateTime(dateTimeFormats, out TimeStamp? stamp)) {
+                        throw reader.InvalidRow("Failed to parse date time " + datumString);
                     }
+                    if (!inputData.TimeStamps.Contains(stamp.Value)) {
+                        continue;
+                    }
+                    if (!prijsString.TryParseDutch(out double prijs)) {
+                        throw reader.InvalidRow("Failed to parse prijs " + prijsString);
+                    }
+                    var stroomPrijs = new StroomPrijs { TimeStamp = stamp.Value, KwHPrijs = prijs };
+                    if (!stroomPrijzen.TryGet(stamp.Value, out var existing)) {
+                        existing = new StroomPrijs { TimeStamp = stamp.Value };
+                        stroomPrijzen.Add(existing);
+                    }
+                    existing.Add(stroomPrijs);
                 }
             }
         }
@@ -139,34 +119,28 @@ namespace EnergiePrijzen.Data.Prijzen {
                     var datumString = row[0];
                     var prijsString = row[2];
 
-                    if (datumString.TryParseDateTime(dateTimeFormats, out TimeStamp? stamp)) {
-                        if (!inputData.TimeStamps.Contains(stamp.Value)) {
-                            continue;
+                    if (!datumString.TryParseDateTime(dateTimeFormats, out TimeStamp? stamp)) {
+                        throw reader.InvalidRow("Failed to parse date time " + datumString);
+                    }
+                    if (!inputData.TimeStamps.Contains(stamp.Value)) {
+                        continue;
+                    }
+                    if (prijsString.TryParseDutch(out double prijs)) {
+                        throw reader.InvalidRow("Failed to parse prijs " + prijsString);
+                    }
+                    // gasprijzen zijn per dag. so need to add each hour/timestamp duration
+                    var end = stamp + TimeSpan.FromHours(24);
+                    while(stamp < end) {
+                        var gasPrijs = new GasPrijs { TimeStamp = stamp.Value, M3Prijs = prijs };
+                        if (!gasPrijzen.TryGet(stamp.Value, out var existing)) {
+                            existing = new GasPrijs { TimeStamp = stamp.Value };
+                            gasPrijzen.Add(existing);
                         }
-                        if (double.TryParse(prijsString, numberStyles, dutch, out double prijs)) {
-                            // gasprijzen zijn per dag. so need to add each hour.
-                            var end = stamp + TimeSpan.FromHours(24);
-                            while(stamp < end) {
-                                // gasprijzen zijn per dag. so need to add each hour / timestamp duration.
-
-                                var gasPrijs = new GasPrijs { TimeStamp = stamp.Value, M3Prijs = prijs };
-                                if (!gasPrijzen.TryGet(stamp.Value, out var existing)) {
-                                    existing = new GasPrijs { TimeStamp = stamp.Value };
-                                    gasPrijzen.Add(existing);
-                                }
-                                existing.Add(gasPrijs);
-                                stamp += TimeStamp.Duration;
-                            }
-                        } else {
-                            reader.ThrowInvalidRow("Failed to parse prijs " + prijsString);
-                        }
-                    } else {
-                        reader.ThrowInvalidRow("Failed to parse date time " + datumString);
+                        existing.Add(gasPrijs);
+                        stamp += TimeStamp.Duration;
                     }
                 }
             }
         }
-
-
     }
 }
