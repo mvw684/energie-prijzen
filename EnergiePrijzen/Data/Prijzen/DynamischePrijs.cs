@@ -1,8 +1,5 @@
 ﻿// Copyright (c) 2025 mvw684
 
-using System;
-using System.Collections.Generic;
-
 namespace EnergiePrijzen.Data.Prijzen {
     public class DynamischePrijs : TimeStampedDataBase<DynamischePrijs> {
         private double kwHprijs;

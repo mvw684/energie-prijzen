@@ -1,4 +1,5 @@
-﻿
+﻿// Copyright (c) 2025 mvw684
+
 using System;
 using System.Collections.Generic;
 

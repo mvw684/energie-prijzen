@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using EnergiePrijzen.Config;
 using EnergiePrijzen.Data.Apparaten;
+using EnergiePrijzen.Data.Apparaten.Meter;
 using EnergiePrijzen.Data.Prijzen;
 
 namespace EnergiePrijzen.Data {
@@ -44,8 +45,16 @@ namespace EnergiePrijzen.Data {
                 return false;
             }
 
-            // TODO: merge meter + prijzen
+            if (!Merge(dynamischePrijzen, meterData, inputData)) {
+                return false;
+            }
             return true;
         }
+
+        private bool Merge(
+            TimeStampedDataList<DynamischePrijs> prijzen, 
+            TimeStampedDataList<MeterData> meterData, 
+            InputData inputData
+        ) => throw new NotImplementedException();
     }
 }

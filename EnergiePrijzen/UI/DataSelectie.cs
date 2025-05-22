@@ -59,7 +59,9 @@ namespace EnergiePrijzen.UI
         }
 
         private void OnCompute(object sender, EventArgs e) {
-            if (UpdateSettings()) {
+            if (executing) {
+                var _ = MessageBox.Show("Er is al een berekening bezig", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else if (UpdateSettings()) {
                 try {
                     executing = true;
                     var generator = new DataGenerator(settings);
