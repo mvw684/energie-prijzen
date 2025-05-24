@@ -1,6 +1,10 @@
 ﻿// Copyright (c) 2025 mvw684
 
 
+using System;
+
+using EnergiePrijzen.Data.Csv;
+
 namespace EnergiePrijzen.Data.Report {
     
     internal class ReportRowData : TimeStampedDataBase<ReportRowData> {
@@ -66,6 +70,31 @@ namespace EnergiePrijzen.Data.Report {
         public required double KwhBatterijStored {
             get => kwhBatterijStored;
             set => kwhBatterijStored = value;
+        }
+
+        internal static void Format(ExcelWriter writer) => throw new NotImplementedException();
+
+        internal static void WriteHeader(ExcelWriter writer) {
+            var header = writer.Header;
+            int cell = 1;
+            header.Cell(cell++).Value = "Timestamp";
+            header.Cell(cell++).Value = "M3 Prijs";
+            header.Cell(cell++).Value = "M3 Gas";
+            header.Cell(cell++).Value = "Gas €";
+            header.Cell(cell++).Value = "Temperatuur";
+            
+
+            header.Cell(cell++).Value = "Kwh Prijs";
+            header.Cell(cell++).Value = "Kwh Verbruik";
+            header.Cell(cell++).Value = "Kwh Teruglevering";
+            header.Cell(cell++).Value = "Kwh €";
+            header.Cell(cell++).Value = "Kwh Batterij Stored";
+            header.Cell(cell++).Value = "Kwh Batterij Laden";
+            header.Cell(cell++).Value = "Kwh Batterij Ontladen";
+            header.Cell(cell++).Value = "Batterij Percentage Full";
+        }
+
+        internal void WriteRow(ExcelWriter writer) {
         }
     }
 }

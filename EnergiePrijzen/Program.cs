@@ -1,8 +1,6 @@
 // Copyright (c) 2025 mvw684
 
 using System;
-using System.Diagnostics;
-using System.Threading;
 using System.Windows.Forms;
 
 using EnergiePrijzen.Config;
@@ -15,6 +13,10 @@ namespace EnergiePrijzen {
         /// </summary>
         [STAThread]
         static void Main() {
+            
+            // TODO: remove once experimentation is completed
+            new Experiment().Run();
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             using (new ExceptionReporting()) {

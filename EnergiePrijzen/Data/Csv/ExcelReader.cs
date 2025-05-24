@@ -4,8 +4,6 @@ using System;
 using System.IO;
 using System.Linq;
 
-using DocumentFormat.OpenXml.Spreadsheet;
-
 using Excel = ClosedXML.Excel;
 
 namespace EnergiePrijzen.Data.Csv {

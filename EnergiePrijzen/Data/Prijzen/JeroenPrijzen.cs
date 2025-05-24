@@ -130,6 +130,7 @@ namespace EnergiePrijzen.Data.Prijzen {
                     }
                     // gasprijzen zijn per dag. so need to add each hour/timestamp duration
                     var end = stamp + TimeSpan.FromHours(24);
+                    // FIX: dst skipping/ignoring here???
                     while(stamp < end) {
                         var gasPrijs = new GasPrijs { TimeStamp = stamp.Value, M3Prijs = prijs };
                         if (!gasPrijzen.TryGet(stamp.Value, out var existing)) {

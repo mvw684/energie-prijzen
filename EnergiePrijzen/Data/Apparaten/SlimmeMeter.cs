@@ -66,6 +66,7 @@ namespace EnergiePrijzen.Data.Apparaten {
                 if (!gasData.TryGet(stamp, out var gas)) {
                     Tracer.Trace("Missing gas data for " + stamp);
                     // sometimes on DST changes mismatches occur
+                    // TODO: get rid of neeed for fallback, likely some subtlety in DST related parsing
                     var fallback = stamp + TimeStamp.Duration;
                     if (!gasData.TryGet(fallback, out gas)) {
                         return false;

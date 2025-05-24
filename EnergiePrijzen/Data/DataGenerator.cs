@@ -7,6 +7,7 @@ using EnergiePrijzen.Config;
 using EnergiePrijzen.Data.Apparaten;
 using EnergiePrijzen.Data.Apparaten.Meter;
 using EnergiePrijzen.Data.Prijzen;
+using EnergiePrijzen.Data.Report;
 
 namespace EnergiePrijzen.Data {
     internal class DataGenerator {
@@ -45,16 +46,10 @@ namespace EnergiePrijzen.Data {
                 return false;
             }
 
-            if (!Merge(dynamischePrijzen, meterData, inputData)) {
+            if (!new ReportGenerator() { InputData = inputData, MeterData = meterData, Prijzen = dynamischePrijzen}.Generate()) {
                 return false;
             }
             return true;
         }
-
-        private bool Merge(
-            TimeStampedDataList<DynamischePrijs> prijzen, 
-            TimeStampedDataList<MeterData> meterData, 
-            InputData inputData
-        ) => throw new NotImplementedException();
     }
 }
