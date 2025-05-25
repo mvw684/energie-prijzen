@@ -30,7 +30,7 @@ namespace EnergiePrijzen.Data.Apparaten.Meter {
 
             double verbuik = 0;
             double teruglevering = 0;
-            foreach (var toAggregate in data) {
+            foreach (StroomData toAggregate in data) {
                 if (TimeStamp != toAggregate.TimeStamp) {
                     throw new ArgumentException("All data must have the same timestamp.");
                 }

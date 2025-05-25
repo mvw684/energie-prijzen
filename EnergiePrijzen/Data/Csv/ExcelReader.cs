@@ -21,10 +21,10 @@ namespace EnergiePrijzen.Data.Csv {
                 throw new InvalidDataException($"Excel file {file.FullName} has more than one sheet");
             }
             sheet = workbook.Worksheet(1);
-            var headerRow = sheet.FirstRow();
+            Excel.IXLRow? headerRow = sheet.FirstRow();
             nrOfRows = sheet.RowsUsed().Count();
             if (headerRow is not null) {
-                var header = GetStringValues(headerRow);
+                string[] header = GetStringValues(headerRow);
                 Header = header;
                 CurrentRowNumber = 1;
             }
@@ -39,7 +39,7 @@ namespace EnergiePrijzen.Data.Csv {
                 return false;
             }
             CurrentRowNumber++;
-            var excelRow = sheet?.Row(CurrentRowNumber);
+            Excel.IXLRow? excelRow = sheet?.Row(CurrentRowNumber);
             if (excelRow is not null) {
                 row = GetStringValues(excelRow);
                 return true;
@@ -49,15 +49,15 @@ namespace EnergiePrijzen.Data.Csv {
             }
         }
 
-        private string[] GetStringValues(Excel.IXLRow excelRow) {
-            
-            var used = excelRow.CellsUsed();
-            var lastUsed = used.LastOrDefault();
-            var column = lastUsed?.Address.ColumnNumber ?? 0;
-            var cellCount = column;
-            var row = new string[cellCount];
+        private static string[] GetStringValues(Excel.IXLRow excelRow) {
+
+            Excel.IXLCells used = excelRow.CellsUsed();
+            Excel.IXLCell? lastUsed = used.LastOrDefault();
+            int column = lastUsed?.Address.ColumnNumber ?? 0;
+            int cellCount = column;
+            string[] row = new string[cellCount];
             for (int i = 0; i < cellCount; i++) {
-                var cell = excelRow.Cell(i + 1);
+                Excel.IXLCell cell = excelRow.Cell(i + 1);
                 if (cell != null) {
                     row[i] = cell.GetString();
                 } else {

@@ -23,7 +23,7 @@ namespace EnergiePrijzen.Data.Csv {
             parser = new CH.CsvParser(new StreamReader(file.FullName), config, leaveOpen:false);
             if (parser.Read()) {
                 CurrentRowNumber++;
-                var header = parser.Record;
+                string[]? header = parser.Record;
                 if (header is not null) {
                     Header = header;
                 }
@@ -36,7 +36,7 @@ namespace EnergiePrijzen.Data.Csv {
             }
             if (parser.Read()) {
                 CurrentRowNumber++;
-                var currentRowData = parser.Record;
+                string[]? currentRowData = parser.Record;
                 if (currentRowData != null) {
                     row = currentRowData;
                     return true;

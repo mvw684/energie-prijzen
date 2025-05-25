@@ -20,7 +20,7 @@ namespace EnergiePrijzen {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             using (new ExceptionReporting()) {
-                var settings = SettingsReader.Read();
+                Settings settings = SettingsReader.Read();
                 ApplicationConfiguration.Initialize();
                 Application.Run(new DataSelectie(settings));
             }

@@ -24,7 +24,7 @@ namespace EnergiePrijzen.Data.Prijzen {
                 return data[0];
             }
             double stroomPrijs = 0;
-            foreach (var toAggregate in data) {
+            foreach (StroomPrijs toAggregate in data) {
                 if (TimeStamp != toAggregate.TimeStamp) {
                     throw new ArgumentException("All data must have the same timestamp.");
                 }

@@ -2,8 +2,9 @@
 
 
 using System;
-
+using Excel = ClosedXML.Excel;
 using EnergiePrijzen.Data.Csv;
+
 
 namespace EnergiePrijzen.Data.Report {
     
@@ -75,7 +76,7 @@ namespace EnergiePrijzen.Data.Report {
         internal static void Format(ExcelWriter writer) => throw new NotImplementedException();
 
         internal static void WriteHeader(ExcelWriter writer) {
-            var header = writer.Header;
+            Excel.IXLRow header = writer.Header;
             int cell = 1;
             header.Cell(cell++).Value = "Timestamp";
             header.Cell(cell++).Value = "M3 Prijs";
@@ -95,6 +96,8 @@ namespace EnergiePrijzen.Data.Report {
         }
 
         internal void WriteRow(ExcelWriter writer) {
+            GC.KeepAlive(this);
+            GC.KeepAlive(writer);
         }
     }
 }

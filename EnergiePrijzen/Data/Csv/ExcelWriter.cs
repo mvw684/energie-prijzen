@@ -30,7 +30,7 @@ namespace EnergiePrijzen.Data.Csv {
             if (sheet is null) {
                 throw new ObjectDisposedException(file.FullName);
             }
-            var row = sheet.Row(++nrOfRows);
+            Excel.IXLRow row = sheet.Row(++nrOfRows);
             return row;
         }
 

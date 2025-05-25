@@ -40,12 +40,10 @@ namespace EnergiePrijzen.UI
 
         private void TraceInternal(string? message) {
             if (InvokeRequired) {
-                Invoke(new Action<string>(TraceInternal), message);
+                _ = Invoke(new Action<string>(TraceInternal), message);
                 return;
             }
-            if (message == null) {
-                message = "<null>";
-            }
+            message ??= "<null>";
             textLog.AppendText(message + Environment.NewLine);
             if (executing) {
                 Application.DoEvents();
@@ -60,13 +58,13 @@ namespace EnergiePrijzen.UI
 
         private void OnCompute(object sender, EventArgs e) {
             if (executing) {
-                var _ = MessageBox.Show("Er is al een berekening bezig", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DialogResult _ = MessageBox.Show("Er is al een berekening bezig", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } else if (UpdateSettings()) {
                 try {
                     executing = true;
                     var generator = new DataGenerator(settings);
                     if (!generator.GenerateData()) {
-                        var _ = MessageBox.Show("Data generatie mislukt", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        DialogResult _ = MessageBox.Show("Data generatie mislukt", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 } finally {
                     executing = false;
@@ -81,8 +79,8 @@ namespace EnergiePrijzen.UI
                 string slimmeMeterValue = slimmeMeterFolder.Text;
                 string sessyFolderValue = sessyFolder.Text;
                 string resultaatFolderValue = resultaatFolder.Text;
-                var start = periodeStart.Value;
-                var end = periodeEnd.Value;
+                DateTime start = periodeStart.Value;
+                DateTime end = periodeEnd.Value;
 
                 settings.JeroenPrijzen = jeroenValue;
                 settings.SolarEdge = solaredgeValue;
@@ -102,8 +100,8 @@ namespace EnergiePrijzen.UI
             string slimmeMeterValue = slimmeMeterFolder.Text;
             string sessyFolderValue = sessyFolder.Text;
             string resultaatFolderValue = resultaatFolder.Text;
-            var start = periodeStart.Value;
-            var end = periodeEnd.Value;
+            DateTime start = periodeStart.Value;
+            DateTime end = periodeEnd.Value;
             return
                 ValidateValue(jeroenValue, "Jeroen prijzen folder") &&
                 ValidateValue(solaredgeValue, "Solar Edge download folder") &&

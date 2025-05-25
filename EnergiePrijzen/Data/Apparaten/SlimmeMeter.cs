@@ -30,10 +30,10 @@ namespace EnergiePrijzen.Data.Apparaten {
             bool result = true;
             var gasData = new TimeStampedDataList<GasData>();
             var stroomData = new TimeStampedDataList<StroomData>();
-            foreach (var fileInfo in meterFolder.EnumerateFiles("*.xlsx", SearchOption.TopDirectoryOnly)) {
+            foreach (FileInfo fileInfo in meterFolder.EnumerateFiles("*.xlsx", SearchOption.TopDirectoryOnly)) {
                 try {
                     using (var reader = new ExcelReader(fileInfo)) {
-                        var header = reader.Header;
+                        string[] header = reader.Header;
                         GC.KeepAlive(header);
                         if (header.Length == 3) {
                             Tracer.Trace($"Reading gas verbruik {fileInfo.FullName}: {string.Join(", ", header)}");
@@ -62,21 +62,21 @@ namespace EnergiePrijzen.Data.Apparaten {
             TimeStampedDataList<GasData> gasData, 
             TimeStampedDataList<StroomData> stroomData
         ) {
-            foreach (var stamp in inputData.TimeStamps) {
-                if (!gasData.TryGet(stamp, out var gas)) {
+            foreach (TimeStamp stamp in inputData.TimeStamps) {
+                if (!gasData.TryGet(stamp, out GasData? gas)) {
                     Tracer.Trace("Missing gas data for " + stamp);
                     // sometimes on DST changes mismatches occur
                     // TODO: get rid of neeed for fallback, likely some subtlety in DST related parsing
-                    var fallback = stamp + TimeStamp.Duration;
+                    TimeStamp fallback = stamp + TimeStamp.Duration;
                     if (!gasData.TryGet(fallback, out gas)) {
                         return false;
                     } else {
                         Tracer.Trace("Using fallback from " + fallback);
                     }
                 }
-                if (!stroomData.TryGet(stamp, out var stroom)) {
+                if (!stroomData.TryGet(stamp, out StroomData? stroom)) {
                     Tracer.Trace("Missing stroom data for " + stamp);
-                    var fallback = stamp + TimeStamp.Duration;
+                    TimeStamp fallback = stamp + TimeStamp.Duration;
                     if (!stroomData.TryGet(stamp, out stroom)) {
                         return false;
                     } else {
@@ -100,14 +100,14 @@ namespace EnergiePrijzen.Data.Apparaten {
         ) {
             reader.CheckHeader("datum_tijd", "levering", "buitentemperatuur");
             DateTime? previous = null;
-            TimeSpan delta = TimeSpan.FromMinutes(60);
+            var delta = TimeSpan.FromMinutes(60);
             bool deltaChecked = false;
             try {
                 double? previousTemperatuur = null;
                 while (reader.Read(out string[] row)) {
-                    var datumTijdString = row[0];
-                    var m3String = row[1];
-                    var temperatuurString = row[2];
+                    string datumTijdString = row[0];
+                    string m3String = row[1];
+                    string temperatuurString = row[2];
                     if (!datumTijdString.TryParseDateTime(dateTimeFormats, out DateTime? dateTime)) {
                         throw reader.InvalidRow("Failed to parse date time " + datumTijdString);
                     }
@@ -138,7 +138,7 @@ namespace EnergiePrijzen.Data.Apparaten {
                         throw reader.InvalidRow("Failed to parse temperatuur " + temperatuurString);
                     }
                     var gas = new GasData { TimeStamp = stamp, M3 = m3, Temperatuur = temperatuur };
-                    if (!gasData.TryGet(stamp, out var existing)) {
+                    if (!gasData.TryGet(stamp, out GasData? existing)) {
                         existing = new GasData { TimeStamp = stamp };
                         gasData.Add(existing);
                     }
@@ -159,16 +159,16 @@ namespace EnergiePrijzen.Data.Apparaten {
         ) {
             reader.CheckHeader("datum_tijd", "levering_normaal", "levering_laag", "teruglevering_normaal", "teruglevering_laag", "buitentemperatuur");
             DateTime? previous = null;
-            TimeSpan delta = TimeSpan.FromMinutes(15);
+            var delta = TimeSpan.FromMinutes(15);
             bool deltaChecked = false;
             try {
 
                 while (reader.Read(out string[] row)) {
-                    var datumTijdString = row[0];
-                    var leveringNormaalString = row[1];
-                    var leveringLaagString = row[2];
-                    var terugleveringNormaalString = row[3];
-                    var terugleveringLaagString = row[4];
+                    string datumTijdString = row[0];
+                    string leveringNormaalString = row[1];
+                    string leveringLaagString = row[2];
+                    string terugleveringNormaalString = row[3];
+                    string terugleveringLaagString = row[4];
                     if (!datumTijdString.TryParseDateTime(dateTimeFormats, out DateTime? dateTime)) {
                         throw reader.InvalidRow("Failed to parse date time " + datumTijdString);
                     }
@@ -199,7 +199,7 @@ namespace EnergiePrijzen.Data.Apparaten {
                         throw reader.InvalidRow("Failed to parse terug levering laag: " + terugleveringLaagString);
                     }
                     var stroom = new StroomData { TimeStamp = stamp, KwhVerbruik = leveringNormaal + leveringLaag, KwhTeruglevering = terugLeveringLaag + terugLeveringNormaal };
-                    if (!stroomData.TryGet(stamp, out var existing)) {
+                    if (!stroomData.TryGet(stamp, out StroomData? existing)) {
                         existing = new StroomData { TimeStamp = stamp };
                         stroomData.Add(existing);
                     }

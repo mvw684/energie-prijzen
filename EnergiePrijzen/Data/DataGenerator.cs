@@ -18,17 +18,17 @@ namespace EnergiePrijzen.Data {
 
         internal bool GenerateData() {
             var timeStamps = new UniqueItemList<TimeStamp>(EqualityComparer<TimeStamp>.Default);
-            if (!settings.PeriodeStart.TryParseDate(out var start)) {
+            if (!settings.PeriodeStart.TryParseDate(out TimeStamp? start)) {
                 return false;
             }
-            if (!settings.PeriodeEnd.TryParseDate(out var end)) {
+            if (!settings.PeriodeEnd.TryParseDate(out TimeStamp? end)) {
                 return false;
             }
             TimeSpan duration = TimeStamp.Duration;
             // adding as universal time to filter out the daylight saving time gaps/jumps
-            var startDateTime = start.Value.Start.ToUniversalTime();
-            var ts = startDateTime;
-            var endDateTime = end.Value.Start.ToUniversalTime();
+            DateTime startDateTime = start.Value.Start.ToUniversalTime();
+            DateTime ts = startDateTime;
+            DateTime endDateTime = end.Value.Start.ToUniversalTime();
             while (ts < endDateTime) {
                 timeStamps.Add(new TimeStamp(ts));
                 ts += duration;
@@ -37,12 +37,12 @@ namespace EnergiePrijzen.Data {
             var inputData = new InputData { Settings = settings, Start = start.Value, End = end.Value, TimeStamps = timeStamps };
 
             var prijzen = new JeroenPrijzen(inputData);
-            if(!prijzen.Load(out var dynamischePrijzen)) {
+            if(!prijzen.Load(out TimeStampedDataList<DynamischePrijs>? dynamischePrijzen)) {
                 return false;
             }
             
             var slimmeMeter = new SlimmeMeter(inputData);
-            if (!slimmeMeter.Load(out var meterData)) {
+            if (!slimmeMeter.Load(out TimeStampedDataList<MeterData>? meterData)) {
                 return false;
             }
 

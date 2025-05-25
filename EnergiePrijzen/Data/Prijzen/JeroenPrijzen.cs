@@ -38,12 +38,12 @@ namespace EnergiePrijzen.Data.Prijzen {
 
         private bool ConsolidatePrijzen(TimeStampedDataList<DynamischePrijs> dynamischePrijzen) {
 
-            foreach (var stamp in inputData.TimeStamps) {
-                if (!gasPrijzen.TryGet(stamp, out var gasPrijs)) {
+            foreach (TimeStamp stamp in inputData.TimeStamps) {
+                if (!gasPrijzen.TryGet(stamp, out GasPrijs? gasPrijs)) {
                     Tracer.Trace("Missing gas prijs for " + stamp);
                     return false;
                 }
-                if (!stroomPrijzen.TryGet(stamp, out var stroomPrijs)) {
+                if (!stroomPrijzen.TryGet(stamp, out StroomPrijs? stroomPrijs)) {
                     Tracer.Trace("Missing stroom prijs for " + stamp);
                     return false;
                 }
@@ -59,7 +59,7 @@ namespace EnergiePrijzen.Data.Prijzen {
         }
 
         private bool LoadStroomPrijzen(DirectoryInfo folder) {
-            foreach (var file in folder.EnumerateFiles("*stroomprijzen*.csv", SearchOption.TopDirectoryOnly)) {
+            foreach (FileInfo file in folder.EnumerateFiles("*stroomprijzen*.csv", SearchOption.TopDirectoryOnly)) {
                 try {
                     ReadStroomPrijzen(file);
                 } catch (Exception e) {
@@ -77,8 +77,8 @@ namespace EnergiePrijzen.Data.Prijzen {
                 reader.CheckHeader("datum", "prijs_excl_btw");
                 
                 while (reader.Read(out string[] row)) {
-                    var datumString = row[0];
-                    var prijsString = row[1];
+                    string datumString = row[0];
+                    string prijsString = row[1];
 
                     if (!datumString.TryParseDateTime(dateTimeFormats, out TimeStamp? stamp)) {
                         throw reader.InvalidRow("Failed to parse date time " + datumString);
@@ -90,7 +90,7 @@ namespace EnergiePrijzen.Data.Prijzen {
                         throw reader.InvalidRow("Failed to parse prijs " + prijsString);
                     }
                     var stroomPrijs = new StroomPrijs { TimeStamp = stamp.Value, KwHPrijs = prijs };
-                    if (!stroomPrijzen.TryGet(stamp.Value, out var existing)) {
+                    if (!stroomPrijzen.TryGet(stamp.Value, out StroomPrijs? existing)) {
                         existing = new StroomPrijs { TimeStamp = stamp.Value };
                         stroomPrijzen.Add(existing);
                     }
@@ -100,7 +100,7 @@ namespace EnergiePrijzen.Data.Prijzen {
         }
 
         private bool LoadGasPrijzen(DirectoryInfo folder) {
-            foreach (var file in folder.EnumerateFiles("*gasprijzen*.csv", SearchOption.TopDirectoryOnly)) {
+            foreach (FileInfo file in folder.EnumerateFiles("*gasprijzen*.csv", SearchOption.TopDirectoryOnly)) {
                 try {
                     ReadGasPrijzen(file);
                 } catch (Exception e) {
@@ -116,8 +116,8 @@ namespace EnergiePrijzen.Data.Prijzen {
             using (var reader = new CsvReader(file, ";")) {
                 reader.CheckHeader("datum", "prijs_excl_belastingen");
                 while (reader.Read(out string[] row)) {
-                    var datumString = row[0];
-                    var prijsString = row[2];
+                    string datumString = row[0];
+                    string prijsString = row[2];
 
                     if (!datumString.TryParseDateTime(dateTimeFormats, out TimeStamp? stamp)) {
                         throw reader.InvalidRow("Failed to parse date time " + datumString);
@@ -129,11 +129,11 @@ namespace EnergiePrijzen.Data.Prijzen {
                         throw reader.InvalidRow("Failed to parse prijs " + prijsString);
                     }
                     // gasprijzen zijn per dag. so need to add each hour/timestamp duration
-                    var end = stamp + TimeSpan.FromHours(24);
+                    TimeStamp? end = stamp + TimeSpan.FromHours(24);
                     // FIX: dst skipping/ignoring here???
                     while(stamp < end) {
                         var gasPrijs = new GasPrijs { TimeStamp = stamp.Value, M3Prijs = prijs };
-                        if (!gasPrijzen.TryGet(stamp.Value, out var existing)) {
+                        if (!gasPrijzen.TryGet(stamp.Value, out GasPrijs? existing)) {
                             existing = new GasPrijs { TimeStamp = stamp.Value };
                             gasPrijzen.Add(existing);
                         }

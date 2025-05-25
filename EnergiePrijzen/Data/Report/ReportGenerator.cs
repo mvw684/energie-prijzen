@@ -14,7 +14,7 @@ namespace EnergiePrijzen.Data.Report {
         private readonly TimeStampedDataList<DynamischePrijs> prijzen;
         private readonly TimeStampedDataList<MeterData> meterData;
         private readonly InputData inputData;
-
+        private FileInfo file;
         internal  required TimeStampedDataList<DynamischePrijs> Prijzen {
             get; init;
         }
@@ -29,14 +29,19 @@ namespace EnergiePrijzen.Data.Report {
 
         internal bool Generate() {
             try {
-                var file = new FileInfo(Path.Combine(InputData.Settings.Resultaat, "EnergiePrijzenReport-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss")+ ".xlsx"));
+                file = new FileInfo(Path.Combine(InputData.Settings.Resultaat, "EnergiePrijzenReport-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss")+ ".xlsx"));
                 Tracer.Trace("Generating report for " + InputData.Start + " to " + InputData.End + " in " + file.FullName);
-                if (!MergeDataValues(out var reportData, out var message)) {
+                if (
+                    !MergeDataValues(
+                        out TimeStampedDataList<ReportRowData>? reportData, 
+                        out string? message
+                    )
+                ) {
                     throw new InvalidDataException(message);
                 }
-                SaveDataValues(file, reportData);
+                SaveDataValues(reportData);
                 Tracer.Trace("Report completed");
-                Process.Start(file.FullName);
+                _ = Process.Start(file.FullName);
             } catch(Exception e) {
                 Tracer.Trace("Failed to generate report: " + e.Message);
             }
@@ -48,12 +53,12 @@ namespace EnergiePrijzen.Data.Report {
             reportData = new TimeStampedDataList<ReportRowData>();
             var batterySimulator = new BatterySimulator();
             var prijsBerekening = new PrijsBerekening();
-            foreach (var timeStamp in inputData.TimeStamps) {
-                if (!prijzen.TryGet(timeStamp, out var prijs)) {
+            foreach (TimeStamp timeStamp in inputData.TimeStamps) {
+                if (!prijzen.TryGet(timeStamp, out DynamischePrijs? prijs)) {
                     message = "Missing price data for " + timeStamp;
                     return false;
                 }
-                if (!meterData.TryGet(timeStamp, out var meter)) {
+                if (!meterData.TryGet(timeStamp, out MeterData? meter)) {
                     message = "Missing meter data for " + timeStamp;
                     return false;
                 }
@@ -77,10 +82,10 @@ namespace EnergiePrijzen.Data.Report {
             return true;
         }
 
-        private void SaveDataValues(FileInfo file, TimeStampedDataList<ReportRowData> reportData) {
+        private void SaveDataValues(TimeStampedDataList<ReportRowData> reportData) {
             using (var writer = new ExcelWriter(file, "Prijzen en verbruik")) {
                 ReportRowData.WriteHeader(writer);
-                foreach (var row in reportData) {
+                foreach (ReportRowData row in reportData) {
                     row.WriteRow(writer);
                 }
                 ReportRowData.Format(writer);
