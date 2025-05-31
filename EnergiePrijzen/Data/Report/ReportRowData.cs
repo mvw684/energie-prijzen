@@ -20,6 +20,9 @@ namespace EnergiePrijzen.Data.Report {
         private double kwhBatterijStored;
         private double batterijPercentageFull;
 
+        private double kwhKostenTotaal;
+        private double m3KostenTotaal;
+
         /// <summary>
         /// Prijs per kWh in euro's.
         /// </summary>
@@ -71,6 +74,16 @@ namespace EnergiePrijzen.Data.Report {
         public required double KwhBatterijStored {
             get => kwhBatterijStored;
             set => kwhBatterijStored = value;
+        }
+
+        public double KwhKostenTotaal {
+            get => kwhKostenTotaal;
+            set => kwhKostenTotaal = value;
+        }
+
+        public double M3KostenTotaal {
+            get => m3KostenTotaal;
+            set => m3KostenTotaal = value;
         }
 
         internal static void Format(ExcelWriter writer) => throw new NotImplementedException();

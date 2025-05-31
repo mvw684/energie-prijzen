@@ -70,6 +70,7 @@ namespace EnergiePrijzen.Data.Csv {
         public void Dispose() {
             workbook?.Dispose();
             workbook = null;
+            sheet = null;
         }
 
 

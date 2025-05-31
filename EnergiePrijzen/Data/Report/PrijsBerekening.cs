@@ -14,12 +14,28 @@ namespace EnergiePrijzen.Data.Report {
 
         private const double gasBelastingPerM3 = 0.71;// 2024, 2025 --> 0.7 en 0.12
         private const double stroomBelastingPerKwh = 0.13;
+
+        private readonly double stroomNetBeheerKosenPerTimeStamp = stroomNetBeheerKostenPerDag / (24 * TimeStamp.Duration.TotalHours);
+        private readonly double stroomLeverKostenPerTimeStamp = stroomLeverKostenPerdag / (24 * TimeStamp.Duration.TotalHours);
+        private readonly double gasNetBeheerKosenPerTimeStamp = gasNetBeheerKostenPerDag / (24 * TimeStamp.Duration.TotalHours);
+        private readonly double gasLeverKostenPerTimeStamp = gasLeverKostenPerdag / (24 * TimeStamp.Duration.TotalHours);
         
         /// <summary>
         /// Pas de row aan met dynamische prijs/verbruik, leverkosten , belasting en andere details
         /// </summary>
         internal void Compute(ReportRowData data) {
-            throw new NotImplementedException("Update method is not implemented yet.");
+            data.KwhKostenTotaal =
+                (
+                    (data.KwhVerbruik * (stroomBelastingPerKwh + data.KwHPrijs)) + 
+                    stroomNetBeheerKosenPerTimeStamp + stroomLeverKostenPerTimeStamp
+                ) * (1 + btw);
+
+            data.M3KostenTotaal =
+                (
+                    (data.M3Gas * (gasBelastingPerM3 + data.M3Prijs)) +
+                    gasNetBeheerKosenPerTimeStamp + gasLeverKostenPerTimeStamp
+                ) * (1 + btw);
+
         }
     }
 }

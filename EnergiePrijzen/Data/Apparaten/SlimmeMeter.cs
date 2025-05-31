@@ -9,9 +9,9 @@ using EnergiePrijzen.Data.Csv;
 namespace EnergiePrijzen.Data.Apparaten {
     internal class SlimmeMeter {
         private const string dateTimeFormat = "dd-MM-yyyy HH:mm:ss K";
-        private static string[] dateTimeFormats = [dateTimeFormat];
+        private static readonly string[] dateTimeFormats = [dateTimeFormat];
 
-        private InputData inputData;
+        private readonly InputData inputData;
         public SlimmeMeter(InputData inputData) => this.inputData = inputData;
 
         public bool Load(out TimeStampedDataList<MeterData> meterData) {
