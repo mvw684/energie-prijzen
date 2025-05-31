@@ -65,7 +65,7 @@ namespace EnergiePrijzen.Data.Report {
                 var reportRow = new ReportRowData() {
                     TimeStamp = timeStamp,
                     M3Prijs = prijs.M3Prijs,
-                    KwHPrijs = prijs.KwHPrijs,
+                    KwhPrijs = prijs.KwHPrijs,
                     M3Gas = meter.M3Gas,
                     KwhVerbruik = meter.KwhVerbruik,
                     KwhTeruglevering = meter.KwhTeruglevering,

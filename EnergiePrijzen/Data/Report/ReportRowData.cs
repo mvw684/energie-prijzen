@@ -9,7 +9,7 @@ using EnergiePrijzen.Data.Csv;
 namespace EnergiePrijzen.Data.Report {
     
     internal class ReportRowData : TimeStampedDataBase<ReportRowData> {
-        private double kwHprijs;
+        private double kwhprijs;
         private double m3Prijs;
         private double m3gas;
         private double kwhVerbruik;
@@ -26,9 +26,9 @@ namespace EnergiePrijzen.Data.Report {
         /// <summary>
         /// Prijs per kWh in euro's.
         /// </summary>
-        public required double KwHPrijs {
-            get => kwHprijs;
-            init => kwHprijs = value;
+        public required double KwhPrijs {
+            get => kwhprijs;
+            init => kwhprijs = value;
         }
 
         public required double M3Prijs {
@@ -91,7 +91,8 @@ namespace EnergiePrijzen.Data.Report {
         internal static void WriteHeader(ExcelWriter writer) {
             Excel.IXLRow header = writer.Header;
             int cell = 1;
-            header.Cell(cell++).Value = "Timestamp";
+            header.Cell(cell++).Value = "Start";
+            header.Cell(cell++).Value = "End";
             header.Cell(cell++).Value = "M3 Prijs";
             header.Cell(cell++).Value = "M3 Gas";
             header.Cell(cell++).Value = "Gas €";
@@ -109,8 +110,24 @@ namespace EnergiePrijzen.Data.Report {
         }
 
         internal void WriteRow(ExcelWriter writer) {
-            GC.KeepAlive(this);
-            GC.KeepAlive(writer);
+            Excel.IXLRow row = writer.AddRow();           ;
+            int cell = 1;
+            row.Cell(cell++).Value = TimeStamp.Start;
+            row.Cell(cell++).Value = TimeStamp.End;
+            row.Cell(cell++).Value = M3Prijs;
+            row.Cell(cell++).Value = M3Gas;
+            row.Cell(cell++).Value = M3KostenTotaal;
+            row.Cell(cell++).Value = Temperatuur;
+
+
+            row.Cell(cell++).Value = KwhPrijs;
+            row.Cell(cell++).Value = KwhVerbruik;
+            row.Cell(cell++).Value = KwhTeruglevering;
+            row.Cell(cell++).Value = KwhKostenTotaal;
+            row.Cell(cell++).Value = KwhBatterijStored;
+            row.Cell(cell++).Value = KwhBatterijLaden;
+            row.Cell(cell++).Value = KwhBatterijOntladen;
+            row.Cell(cell++).Value = BatterijPercentageFull;
         }
     }
 }

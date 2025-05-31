@@ -26,7 +26,7 @@ namespace EnergiePrijzen.Data.Report {
         internal void Compute(ReportRowData data) {
             data.KwhKostenTotaal =
                 (
-                    (data.KwhVerbruik * (stroomBelastingPerKwh + data.KwHPrijs)) + 
+                    (data.KwhVerbruik * (stroomBelastingPerKwh + data.KwhPrijs)) + 
                     stroomNetBeheerKosenPerTimeStamp + stroomLeverKostenPerTimeStamp
                 ) * (1 + btw);
 
