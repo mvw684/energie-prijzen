@@ -47,6 +47,8 @@ namespace EnergiePrijzen.UI
             periodeEnd = new DateTimePicker();
             textLog = new TextBox();
             showSettings = new Button();
+            labelBatterijen = new Label();
+            aantalBatterijen = new ComboBox();
             SuspendLayout();
             // 
             // jeroenLabel
@@ -221,11 +223,31 @@ namespace EnergiePrijzen.UI
             showSettings.UseVisualStyleBackColor = true;
             showSettings.Click += ShowSettings;
             // 
+            // labelBatterijen
+            // 
+            labelBatterijen.AutoSize = true;
+            labelBatterijen.Location = new Point(414, 19);
+            labelBatterijen.Name = "labelBatterijen";
+            labelBatterijen.Size = new Size(64, 15);
+            labelBatterijen.TabIndex = 17;
+            labelBatterijen.Text = "#Batterijen";
+            // 
+            // aantalBatterijen
+            // 
+            aantalBatterijen.FormattingEnabled = true;
+            aantalBatterijen.Items.AddRange(new object[] { "0", "1", "2", "3", "4", "5", "6" });
+            aantalBatterijen.Location = new Point(484, 13);
+            aantalBatterijen.Name = "aantalBatterijen";
+            aantalBatterijen.Size = new Size(121, 23);
+            aantalBatterijen.TabIndex = 18;
+            // 
             // DataSelectie
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1031, 450);
+            Controls.Add(aantalBatterijen);
+            Controls.Add(labelBatterijen);
             Controls.Add(showSettings);
             Controls.Add(textLog);
             Controls.Add(periodeEnd);
@@ -268,5 +290,7 @@ namespace EnergiePrijzen.UI
         private DateTimePicker periodeEnd;
         private TextBox textLog;
         private Button showSettings;
+        private Label labelBatterijen;
+        private ComboBox aantalBatterijen;
     }
 }

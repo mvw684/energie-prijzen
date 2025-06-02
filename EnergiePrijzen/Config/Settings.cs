@@ -38,6 +38,10 @@ namespace EnergiePrijzen.Config {
             get;set;
         } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\SlimmeMeterPortal";
 
+        public int NrOfBatteriesToSimulate {
+            get; set;
+        } = 0;
+
         public string Sessy {
             get; set;
         } = @"D:\OneDrive\Documents\Administratie\Huis\Electriciteits prijzen en keuzes\Sessy";

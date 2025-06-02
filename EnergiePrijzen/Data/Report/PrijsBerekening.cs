@@ -4,7 +4,7 @@ namespace EnergiePrijzen.Data.Report {
     internal class PrijsBerekening {
 
         // om en nabij getallen
-
+        private const double afschrijvingPerKwh = 0.12; // 12 cent per kWh
         private const double btw = 0.21; // 21% btw
         private const double stroomNetBeheerKostenPerDag = 1.16656;
         private const double gasNetBeheerKostenPerDag = 0.61057;
@@ -26,9 +26,14 @@ namespace EnergiePrijzen.Data.Report {
         internal void Compute(ReportRowData data) {
             data.KwhKostenTotaal =
                 (
-                    (data.KwhVerbruik * (stroomBelastingPerKwh + data.KwhPrijs)) + 
-                    stroomNetBeheerKosenPerTimeStamp + stroomLeverKostenPerTimeStamp
-                ) * (1 + btw);
+                    (
+                        (data.KwhVerbruik * (stroomBelastingPerKwh + data.KwhPrijs)) + 
+                        stroomNetBeheerKosenPerTimeStamp + stroomLeverKostenPerTimeStamp
+                    ) * (1 + btw)
+                ) + 
+                (
+                    data.KwhBatterijOntladen * afschrijvingPerKwh
+                );
 
             data.M3KostenTotaal =
                 (

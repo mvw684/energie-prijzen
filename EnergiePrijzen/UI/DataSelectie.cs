@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 
@@ -23,6 +24,7 @@ namespace EnergiePrijzen.UI
             slimmeMeterFolder.Text = settings.SlimmeMeter;
             sessyFolder.Text = settings.Sessy;
             resultaatFolder.Text = settings.Resultaat;
+            aantalBatterijen.Text = settings.NrOfBatteriesToSimulate.ToString(CultureInfo.InvariantCulture);
             if (settings.PeriodeStart.TryParseDate(out TimeStamp? start)) {
                 periodeStart.Value = start.Value.Start;
             } else {
@@ -79,6 +81,7 @@ namespace EnergiePrijzen.UI
                 string slimmeMeterValue = slimmeMeterFolder.Text;
                 string sessyFolderValue = sessyFolder.Text;
                 string resultaatFolderValue = resultaatFolder.Text;
+                string aantalBatterijenValue = aantalBatterijen.Text;
                 DateTime start = periodeStart.Value;
                 DateTime end = periodeEnd.Value;
 
@@ -89,6 +92,7 @@ namespace EnergiePrijzen.UI
                 settings.Resultaat = resultaatFolderValue;
                 settings.PeriodeStart = start.ToString(TimeStampExtensions.DateFormat);
                 settings.PeriodeEnd = end.ToString(TimeStampExtensions.DateFormat);
+                settings.NrOfBatteriesToSimulate = int.Parse(aantalBatterijenValue, CultureInfo.InvariantCulture);
                 return true;
             }
             return false;
@@ -100,6 +104,7 @@ namespace EnergiePrijzen.UI
             string slimmeMeterValue = slimmeMeterFolder.Text;
             string sessyFolderValue = sessyFolder.Text;
             string resultaatFolderValue = resultaatFolder.Text;
+            string aantalBatterijenValue = aantalBatterijen.Text;
             DateTime start = periodeStart.Value;
             DateTime end = periodeEnd.Value;
             return
@@ -108,7 +113,20 @@ namespace EnergiePrijzen.UI
                 ValidateValue(slimmeMeterValue, "Slimme meter download folder") &&
                 ValidateValue(sessyFolderValue, "Sessy download folder") &&
                 ValidateValue(resultaatFolderValue, "Resultaat folder") &&
-                ValidateValue(start, end, "Periode start", "Periode eind");
+                ValidateValue(start, end, "Periode start", "Periode eind") &&
+                ValidateIntValue(aantalBatterijenValue, "Aantal batterijen om te simuleren");
+        }
+
+        private static bool ValidateIntValue(string aantalBatterijenValue, string message) {
+            if (!int.TryParse(aantalBatterijenValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out int aantalBatterijen)) {
+                _ = MessageBox.Show($"{aantalBatterijen} is geen geldige integer voor {message}", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            if (aantalBatterijen < 0) {
+                _ = MessageBox.Show($"{message} moet >= 0 zijn", "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            return true;
         }
 
         private static bool ValidateValue(
