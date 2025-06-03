@@ -51,7 +51,7 @@ namespace EnergiePrijzen.Data.Report {
         private bool MergeDataValues([NotNullWhen(true)] out TimeStampedDataList<ReportRowData> reportData, [NotNullWhen(false)] out string message) {
             message = string.Empty;
             reportData = new TimeStampedDataList<ReportRowData>();
-            var batterySimulator = new BatterySimulator(inputData.Settings.NrOfBatteriesToSimulate);
+            var batterySimulator = inputData.Settings.NrOfBatteriesToSimulate > 0 ? new BatterySimulator(inputData.Settings.NrOfBatteriesToSimulate) : null;
             var prijsBerekening = new PrijsBerekening();
             foreach (TimeStamp timeStamp in inputData.TimeStamps) {
                 if (!prijzen.TryGet(timeStamp, out DynamischePrijs? prijs)) {
@@ -75,7 +75,7 @@ namespace EnergiePrijzen.Data.Report {
                     KwhBatterijStored = 0,
                     BatterijPercentageFull = 0
                 };
-                batterySimulator.Simulate(reportRow);
+                batterySimulator?.Simulate(reportRow);
                 prijsBerekening.Compute(reportRow);
                 reportData.Add(reportRow);
             }

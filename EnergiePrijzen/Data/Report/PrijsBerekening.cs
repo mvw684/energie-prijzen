@@ -1,9 +1,8 @@
-﻿using System;
+﻿// Copyright (c) 2025 mvw684
 
 namespace EnergiePrijzen.Data.Report {
     internal class PrijsBerekening {
 
-        // om en nabij getallen
         private const double afschrijvingPerKwh = 0.12; // 12 cent per kWh
         private const double btw = 0.21; // 21% btw
         private const double stroomNetBeheerKostenPerDag = 1.16656;
