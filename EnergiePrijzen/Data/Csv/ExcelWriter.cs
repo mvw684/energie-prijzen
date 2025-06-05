@@ -26,11 +26,11 @@ namespace EnergiePrijzen.Data.Csv {
         }
 
         public Excel.IXLRow AddRow() {
-            nrOfRows++;
             if (sheet is null) {
                 throw new ObjectDisposedException(file.FullName);
             }
-            Excel.IXLRow row = sheet.Row(++nrOfRows);
+            nrOfRows++;
+            Excel.IXLRow row = sheet.Row(nrOfRows);
             return row;
         }
 
@@ -39,6 +39,20 @@ namespace EnergiePrijzen.Data.Csv {
                 throw new ObjectDisposedException(file.FullName);
             }
             return sheet.Column(index);
+        }
+
+        public Excel.IXLRow Row(int index) {
+            if (sheet is null) {
+                throw new ObjectDisposedException(file.FullName);
+            }
+            return sheet.Row(index);
+        }
+
+        public void FreezeRows(int row) {
+            if (sheet is null) {
+                throw new ObjectDisposedException(file.FullName);
+            }
+            sheet.SheetView.FreezeRows(1); // Freeze the specified row
         }
 
         public void Dispose() {

@@ -86,18 +86,57 @@ namespace EnergiePrijzen.Data.Report {
             set => m3KostenTotaal = value;
         }
 
-        internal static void Format(ExcelWriter writer) => throw new NotImplementedException();
-
-        internal static void WriteHeader(ExcelWriter writer) {
-            Excel.IXLRow header = writer.Header;
+        internal static void Format(ExcelWriter writer) {
             int cell = 1;
+            writer.Column(cell++).Style.DateFormat.Format = "dd-MM-yyyy HH:mm:ss";  //"Start";
+            writer.Column(cell++).Style.DateFormat.Format = "dd-MM-yyyy HH:mm:ss";  //"End";
+            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.0000";         //"M3 Prijs";
+            writer.Column(cell++).Style.NumberFormat.Format = "0.000";              //"M3 Gas";
+            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.00";         //"Gas €";
+            writer.Column(cell++).Style.NumberFormat.Format = "0.00";               //"Temperatuur";
+
+            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.0000";         //"Kwh Prijs";
+            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           //"Kwh Verbruik";
+            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Teruglevering";
+            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.00";         // "Kwh €";
+            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Batterij Stored";
+            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Batterij Laden";
+            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Batterij Ontladen";
+            writer.Column(cell++).Style.NumberFormat.NumberFormatId = 10;           // "Batterij Percentage Full";
+
+            cell = 1;
+            writer.Column(cell++).AdjustToContents();  //"Start";
+            writer.Column(cell++).AdjustToContents();  //"End";
+            writer.Column(cell++).AdjustToContents();  //"M3 Prijs";
+            writer.Column(cell++).AdjustToContents();  //"M3 Gas";
+            writer.Column(cell++).AdjustToContents();  //"Gas €";
+            writer.Column(cell++).AdjustToContents();  //"Temperatuur";
+
+            writer.Column(cell++).AdjustToContents();  //"Kwh Prijs";
+            writer.Column(cell++).AdjustToContents();  //"Kwh Verbruik";
+            writer.Column(cell++).AdjustToContents();  // "Kwh Teruglevering";
+            writer.Column(cell++).AdjustToContents();  // "Kwh €";
+            writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Stored";
+            writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Laden";
+            writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Ontladen";
+            writer.Column(cell++).AdjustToContents();  // "Batterij Percentage Full";
+            var header = writer.Header;
+            header.SetAutoFilter(); // Set auto filter on the header row
+            header.Style.Alignment.SetWrapText(true); // Wrap text in header row
+            header.Style.Alignment.Vertical = Excel.XLAlignmentVerticalValues.Top;
+            header.Style.Alignment.Horizontal = Excel.XLAlignmentHorizontalValues.Left;
+            writer.FreezeRows(1); // Freeze the header row
+        }                                                                           
+                                                                                    
+        internal static void WriteHeader(ExcelWriter writer) {                      
+            Excel.IXLRow header = writer.Header;                                    
+            int cell = 1;                                                           
             header.Cell(cell++).Value = "Start";
             header.Cell(cell++).Value = "End";
             header.Cell(cell++).Value = "M3 Prijs";
             header.Cell(cell++).Value = "M3 Gas";
             header.Cell(cell++).Value = "Gas €";
             header.Cell(cell++).Value = "Temperatuur";
-            
 
             header.Cell(cell++).Value = "Kwh Prijs";
             header.Cell(cell++).Value = "Kwh Verbruik";

@@ -71,7 +71,7 @@ namespace EnergiePrijzen.Data.Apparaten {
                     if (!gasData.TryGet(fallback, out gas)) {
                         return false;
                     } else {
-                        Tracer.Trace("Using fallback from " + fallback);
+                        Tracer.Trace("Using fallback from " + fallback + " instead of " + stamp);
                     }
                 }
                 if (!stroomData.TryGet(stamp, out StroomData? stroom)) {
