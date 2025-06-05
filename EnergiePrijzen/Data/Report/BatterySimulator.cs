@@ -35,7 +35,14 @@ namespace EnergiePrijzen.Data.Report {
                 reportRow.KwhBatterijLaden = kwhToCharge;
                 reportRow.KwhTeruglevering -= kwhToCharge; // Reduce the amount of energy returned to the grid
                 reportRow.KwhBatterijStored = kwhStored;
-                reportRow.BatterijPercentageFull = (kwhStored / maxKwhStored) * 100; // Update battery percentage
+                double percentage = kwhStored / maxKwhStored;
+                if (percentage > 1) {
+                    percentage = 1; // Cap at 100%
+                }
+                percentage *= 100;
+
+                reportRow.BatterijPercentageFull = percentage;
+
             } else if (reportRow.KwhVerbruik > 0) {
                 // Battery discharging
                 double kwhToDischarge = Min(reportRow.KwhVerbruik / rendement, maxKwhDischarge * rendement, kwhStored * rendement);

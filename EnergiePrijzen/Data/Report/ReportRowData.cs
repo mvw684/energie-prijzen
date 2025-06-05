@@ -105,24 +105,24 @@ namespace EnergiePrijzen.Data.Report {
             writer.Column(cell++).Style.NumberFormat.NumberFormatId = 10;           // "Batterij Percentage Full";
 
             cell = 1;
-            writer.Column(cell++).AdjustToContents();  //"Start";
-            writer.Column(cell++).AdjustToContents();  //"End";
-            writer.Column(cell++).AdjustToContents();  //"M3 Prijs";
-            writer.Column(cell++).AdjustToContents();  //"M3 Gas";
-            writer.Column(cell++).AdjustToContents();  //"Gas €";
-            writer.Column(cell++).AdjustToContents();  //"Temperatuur";
+            _ = writer.Column(cell++).AdjustToContents();  //"Start";
+            _ = writer.Column(cell++).AdjustToContents();  //"End";
+            _ = writer.Column(cell++).AdjustToContents();  //"M3 Prijs";
+            _ = writer.Column(cell++).AdjustToContents();  //"M3 Gas";
+            _ = writer.Column(cell++).AdjustToContents();  //"Gas €";
+            _ = writer.Column(cell++).AdjustToContents();  //"Temperatuur";
 
-            writer.Column(cell++).AdjustToContents();  //"Kwh Prijs";
-            writer.Column(cell++).AdjustToContents();  //"Kwh Verbruik";
-            writer.Column(cell++).AdjustToContents();  // "Kwh Teruglevering";
-            writer.Column(cell++).AdjustToContents();  // "Kwh €";
-            writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Stored";
-            writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Laden";
-            writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Ontladen";
-            writer.Column(cell++).AdjustToContents();  // "Batterij Percentage Full";
-            var header = writer.Header;
-            header.SetAutoFilter(); // Set auto filter on the header row
-            header.Style.Alignment.SetWrapText(true); // Wrap text in header row
+            _ = writer.Column(cell++).AdjustToContents();  //"Kwh Prijs";
+            _ = writer.Column(cell++).AdjustToContents();  //"Kwh Verbruik";
+            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Teruglevering";
+            _ = writer.Column(cell++).AdjustToContents();  // "Kwh €";
+            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Stored";
+            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Laden";
+            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Ontladen";
+            _ = writer.Column(cell++).AdjustToContents();  // "Batterij Percentage Full";
+            Excel.IXLRow header = writer.Header;
+            _ = header.SetAutoFilter(); // Set auto filter on the header row
+            _ = header.Style.Alignment.SetWrapText(true); // Wrap text in header row
             header.Style.Alignment.Vertical = Excel.XLAlignmentVerticalValues.Top;
             header.Style.Alignment.Horizontal = Excel.XLAlignmentHorizontalValues.Left;
             writer.FreezeRows(1); // Freeze the header row

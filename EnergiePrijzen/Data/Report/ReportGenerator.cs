@@ -91,7 +91,7 @@ namespace EnergiePrijzen.Data.Report {
             return true;
         }
 
-        private void SaveDataValues(FileInfo file, TimeStampedDataList<ReportRowData> reportData) {
+        private static void SaveDataValues(FileInfo file, TimeStampedDataList<ReportRowData> reportData) {
             using (var writer = new ExcelWriter(file, "Prijzen en verbruik")) {
                 ReportRowData.WriteHeader(writer);
                 foreach (ReportRowData row in reportData) {

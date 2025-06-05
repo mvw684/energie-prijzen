@@ -52,7 +52,7 @@ namespace EnergiePrijzen.Data.Csv {
             if (sheet is null) {
                 throw new ObjectDisposedException(file.FullName);
             }
-            sheet.SheetView.FreezeRows(1); // Freeze the specified row
+            sheet.SheetView.FreezeRows(row); // Freeze the specified row
         }
 
         public void Dispose() {
