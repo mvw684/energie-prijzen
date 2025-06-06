@@ -27,11 +27,16 @@ namespace EnergiePrijzen.Data.Report {
         internal void Simulate(ReportRowData reportRow) {
             if (reportRow.KwhTeruglevering > 0) {
                 // Battery charging
-                double kwhToCharge = Min(reportRow.KwhTeruglevering, maxKwhCharche);
-                if (kwhStored + (kwhToCharge * rendement) > maxKwhStored) {
+                double kwhToCharge = Min(reportRow.KwhTeruglevering, maxKwhCharche, (maxKwhStored - kwhStored) / rendement);
+                double newKwhStored = kwhStored + (kwhToCharge * rendement);
+                if (newKwhStored > maxKwhStored) {
                     kwhToCharge = (maxKwhStored - kwhStored) / rendement; // Limit to max storage capacity
+                    newKwhStored = kwhStored + (kwhToCharge * rendement);
                 }
                 kwhStored += kwhToCharge * rendement;
+                if (kwhStored > maxKwhStored) {
+                    kwhStored = maxKwhStored; // Cap at maximum storage
+                }
                 reportRow.KwhBatterijLaden = kwhToCharge;
                 reportRow.KwhTeruglevering -= kwhToCharge; // Reduce the amount of energy returned to the grid
                 reportRow.KwhBatterijStored = kwhStored;
@@ -39,13 +44,11 @@ namespace EnergiePrijzen.Data.Report {
                 if (percentage > 1) {
                     percentage = 1; // Cap at 100%
                 }
-                percentage *= 100;
-
                 reportRow.BatterijPercentageFull = percentage;
 
             } else if (reportRow.KwhVerbruik > 0) {
                 // Battery discharging
-                double kwhToDischarge = Min(reportRow.KwhVerbruik / rendement, maxKwhDischarge * rendement, kwhStored * rendement);
+                double kwhToDischarge = Min(reportRow.KwhVerbruik / rendement, maxKwhDischarge, kwhStored);
                 kwhStored -= kwhToDischarge;
                 reportRow.KwhBatterijOntladen = kwhToDischarge;
                 reportRow.KwhVerbruik -= kwhToDischarge * rendement; // Reduce the amount of energy consumed from the grid
