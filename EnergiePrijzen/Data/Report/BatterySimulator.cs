@@ -19,9 +19,9 @@ namespace EnergiePrijzen.Data.Report {
                 throw new ArgumentOutOfRangeException(nameof(numberOfBatteries), "Number of batteries must be greater or equal than zero.");
             }
             nrOfBatteries = numberOfBatteries;
-            maxKwhCharche = nrOfBatteries * 2200;
-            maxKwhDischarge = nrOfBatteries * 1700;
-            maxKwhStored = nrOfBatteries * 5000;
+            maxKwhCharche = nrOfBatteries * 2.200;
+            maxKwhDischarge = nrOfBatteries * 1.700;
+            maxKwhStored = nrOfBatteries * 5.000;
         }
 
         internal void Simulate(ReportRowData reportRow) {
@@ -40,12 +40,6 @@ namespace EnergiePrijzen.Data.Report {
                 reportRow.KwhBatterijLaden = kwhToCharge;
                 reportRow.KwhTeruglevering -= kwhToCharge; // Reduce the amount of energy returned to the grid
                 reportRow.KwhBatterijStored = kwhStored;
-                double percentage = kwhStored / maxKwhStored;
-                if (percentage > 1) {
-                    percentage = 1; // Cap at 100%
-                }
-                reportRow.BatterijPercentageFull = percentage;
-
             } else if (reportRow.KwhVerbruik > 0) {
                 // Battery discharging
                 double kwhToDischarge = Min(reportRow.KwhVerbruik / rendement, maxKwhDischarge, kwhStored);
@@ -53,8 +47,8 @@ namespace EnergiePrijzen.Data.Report {
                 reportRow.KwhBatterijOntladen = kwhToDischarge;
                 reportRow.KwhVerbruik -= kwhToDischarge * rendement; // Reduce the amount of energy consumed from the grid
                 reportRow.KwhBatterijStored = kwhStored;
-                reportRow.BatterijPercentageFull = (kwhStored / maxKwhStored) * 100; // Update battery percentage
             }
+            reportRow.BatterijPercentageFull = kwhStored / maxKwhStored;
         }
 
         private static double Min(params double[] values) {

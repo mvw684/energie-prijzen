@@ -28,19 +28,19 @@ namespace EnergiePrijzen.Data.Apparaten.Meter {
                 return data[0];
             }
 
-            double verbuik = 0;
+            double verbruik = 0;
             double teruglevering = 0;
             foreach (StroomData toAggregate in data) {
                 if (TimeStamp != toAggregate.TimeStamp) {
                     throw new ArgumentException("All data must have the same timestamp.");
                 }
                 teruglevering += toAggregate.KwhTeruglevering;
-                kwhVerbruik += toAggregate.KwhVerbruik;
+                verbruik += toAggregate.KwhVerbruik;
             }
             return new StroomData {
                 TimeStamp = TimeStamp,
                 KwhTeruglevering = teruglevering,
-                KwhVerbruik = verbuik
+                KwhVerbruik = verbruik
             };
         }
         public override void SetAggregateResult(StroomData data) {
