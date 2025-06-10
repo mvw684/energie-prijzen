@@ -22,7 +22,7 @@ namespace EnergiePrijzen.Data {
         }
 
         public static bool TryParseDateTime(this string dateString, string[] formats, [NotNullWhen(true)] out DateTime? dateTime) {
-            if (DateTime.TryParseExact(dateString, formats, null, System.Globalization.DateTimeStyles.AssumeLocal, out var temp)) {
+            if (DateTime.TryParseExact(dateString, formats, null, System.Globalization.DateTimeStyles.AssumeLocal, out DateTime temp)) {
                 dateTime = temp;
                 return true;
             } else {
@@ -43,7 +43,7 @@ namespace EnergiePrijzen.Data {
 
         internal static bool Aggregate<TData>(this TimeStampedDataList<TData> aggragetables) where TData : class, IAggregatableData<TData> {
             try {
-                foreach (var item in aggragetables) {
+                foreach (TData item in aggragetables) {
                     item.Aggregate();
                 }
             } catch (Exception e) {

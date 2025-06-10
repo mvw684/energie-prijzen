@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using EnergiePrijzen.Config;
 using EnergiePrijzen.Data.Apparaten;
 using EnergiePrijzen.Data.Apparaten.Meter;
+using EnergiePrijzen.Data.Apparaten.ZonnePanelen;
 using EnergiePrijzen.Data.Prijzen;
 using EnergiePrijzen.Data.Report;
 
@@ -40,13 +41,16 @@ namespace EnergiePrijzen.Data {
             if(!prijzen.Load(out TimeStampedDataList<DynamischePrijs>? dynamischePrijzen)) {
                 return false;
             }
-            
+            var panelenDataReader = new SolarEdgeReader(inputData);
+            if (!panelenDataReader.Load(out TimeStampedDataList<ZonnePanelenProductie>? zonnepanelenProductie)) {
+                return false;
+            }
             var slimmeMeter = new SlimmeMeter(inputData);
             if (!slimmeMeter.Load(out TimeStampedDataList<MeterData>? meterData)) {
                 return false;
             }
 
-            if (!new ReportGenerator() { InputData = inputData, MeterData = meterData, Prijzen = dynamischePrijzen}.Generate()) {
+            if (!new ReportGenerator() { InputData = inputData, MeterData = meterData, Prijzen = dynamischePrijzen, PanelenData = zonnepanelenProductie }.Generate()) {
                 return false;
             }
             return true;

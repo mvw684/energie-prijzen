@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 using EnergiePrijzen.Data.Apparaten.Meter;
+using EnergiePrijzen.Data.Apparaten.ZonnePanelen;
 using EnergiePrijzen.Data.Csv;
 using EnergiePrijzen.Data.Prijzen;
 
@@ -16,6 +17,7 @@ namespace EnergiePrijzen.Data.Report {
         // required init only fields
         private readonly TimeStampedDataList<DynamischePrijs> prijzen;
         private readonly TimeStampedDataList<MeterData> meterData;
+        private readonly TimeStampedDataList<ZonnePanelenProductie> panelenData = new TimeStampedDataList<ZonnePanelenProductie>();
         private readonly InputData inputData;
         #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -32,6 +34,11 @@ namespace EnergiePrijzen.Data.Report {
         internal required InputData InputData {
             get => inputData; 
             init => inputData = value ?? throw new ArgumentNullException(nameof(value), "InputData cannot be null. Ensure that the data is loaded correctly before generating the report.");
+        }
+
+        internal required TimeStampedDataList<ZonnePanelenProductie> PanelenData {
+            get => panelenData;
+            init => panelenData = value ?? throw new ArgumentNullException(nameof(value), "PanelenData cannot be null. Ensure that the data is loaded correctly before generating the report.");
         }
 
         internal bool Generate() {
@@ -58,6 +65,7 @@ namespace EnergiePrijzen.Data.Report {
         }
 
         private bool MergeDataValues([NotNullWhen(true)] out TimeStampedDataList<ReportRowData> reportData, [NotNullWhen(false)] out string message) {
+            // TODO: add panelen data to report
             message = string.Empty;
             reportData = new TimeStampedDataList<ReportRowData>();
             BatterySimulator? batterySimulator = inputData.Settings.NrOfBatteriesToSimulate > 0 ? new BatterySimulator(inputData.Settings.NrOfBatteriesToSimulate) : null;
@@ -71,6 +79,10 @@ namespace EnergiePrijzen.Data.Report {
                     message = "Missing meter data for " + timeStamp;
                     return false;
                 }
+                if (!panelenData.TryGet(timeStamp, out ZonnePanelenProductie? zonnepanelen)) {
+                    message = "Missing zonnepanelen data for " + timeStamp;
+                    return false;
+                }
                 var reportRow = new ReportRowData() {
                     TimeStamp = timeStamp,
                     M3Prijs = prijs.M3Prijs,
@@ -79,6 +91,9 @@ namespace EnergiePrijzen.Data.Report {
                     KwhVerbruik = meter.KwhVerbruik,
                     KwhTeruglevering = meter.KwhTeruglevering,
                     Temperatuur = meter.Temperatuur,
+                    KwhZonProductie = zonnepanelen.KwhProductie,
+                    KwhZonDirectVerbruik = zonnepanelen.KwhProductie - meter.KwhTeruglevering,
+                    KwhTotaalVerbruik = meter.KwhVerbruik + zonnepanelen.KwhProductie - meter.KwhTeruglevering,
                     KwhBatterijLaden = 0,
                     KwhBatterijOntladen = 0,
                     KwhBatterijStored = 0,

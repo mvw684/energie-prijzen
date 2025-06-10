@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2025 mvw684
 
 using System;
+using System.Diagnostics.Metrics;
 
 namespace EnergiePrijzen.Data.Report {
     internal class BatterySimulator {
@@ -49,6 +50,8 @@ namespace EnergiePrijzen.Data.Report {
                 reportRow.KwhBatterijStored = kwhStored;
             }
             reportRow.BatterijPercentageFull = kwhStored / maxKwhStored;
+            reportRow.KwhZonDirectVerbruik = reportRow.KwhZonProductie - reportRow.KwhTeruglevering - reportRow.KwhBatterijLaden;
+            reportRow.KwhTotaalVerbruik = reportRow.KwhVerbruik + reportRow.KwhZonProductie - reportRow.KwhTeruglevering - reportRow.KwhBatterijLaden;
         }
 
         private static double Min(params double[] values) {

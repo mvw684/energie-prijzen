@@ -7,7 +7,6 @@ using CH = CsvHelper;
 
 namespace EnergiePrijzen.Data.Csv {
     
-    
     internal class CsvReader : ReaderBase, IDisposable {
 
         private CH.CsvParser? parser;

@@ -4,16 +4,76 @@
 using System;
 using Excel = ClosedXML.Excel;
 using EnergiePrijzen.Data.Csv;
+using System.ComponentModel;
 
 
 namespace EnergiePrijzen.Data.Report {
     
     internal class ReportRowData : TimeStampedDataBase<ReportRowData> {
+
+        internal enum Field {
+
+            [Description("Start")]
+            Start = 1,
+
+            [Description("End")]
+            End,
+
+            [Description("M3 Prijs")]
+            M3Prijs,
+
+            [Description("M3 Gas")]
+            M3Gas,
+
+            [Description("Gas €")]
+            M3Kosten,
+
+            [Description("Temperatuur")]
+            Temperatuur,
+
+            [Description("Kwh Prijs")]
+            KwhPrijs,
+
+            [Description("Kwh Verbruik")]
+            KwhVerbruik,
+
+            [Description("Kwh Teruglevering")]
+            KwhTeruglevering,
+
+            [Description("Kwh Zon Productie")]
+            KwhZonProductie,
+
+            [Description("Kwh Zon Direct Gebruik")]
+            KwhZonDirectVerbruik,
+
+            [Description("Kwh Totaal Gebruik")]
+            KwhTotaalVerbruik,
+
+            [Description("Kwh €")]
+            KwhKosten,
+
+            [Description("Kwh Batterij Stored")]
+            KwhBatterijStored,
+
+            [Description("Kwh Batterij Laden")]
+            KwhBatterijLaden,
+
+            [Description("Kwh Batterij Ontladen")]
+            KwhBatterijOntladen,
+
+            [Description("Batterij Percentage Full")]
+            BatterijPercentageFull
+        }
+
         private double kwhprijs;
         private double m3Prijs;
         private double m3gas;
         private double kwhVerbruik;
         private double kwhTeruglevering;
+        private double kwhZonProductie;
+        private double kwhZonDirectVerbruik;
+        private double kwhTotaalVerbruik;
+
         private double temperatuur;
         private double kwhBatterijLaden;
         private double kwhBatterijOntladen;
@@ -44,6 +104,21 @@ namespace EnergiePrijzen.Data.Report {
         public required double KwhTeruglevering {
             get => kwhTeruglevering;
             set => kwhTeruglevering = value;
+        }
+
+        public required double KwhZonProductie {
+            get => kwhZonProductie;
+            set => kwhZonProductie = value;
+        }
+
+        public required double KwhZonDirectVerbruik {
+            get => kwhZonDirectVerbruik;
+            set => kwhZonDirectVerbruik = value;
+        }
+
+        public required double KwhTotaalVerbruik {
+            get => kwhTotaalVerbruik;
+            set => kwhTotaalVerbruik = value;
         }
 
         public required double M3Gas {
@@ -87,39 +162,30 @@ namespace EnergiePrijzen.Data.Report {
         }
 
         internal static void Format(ExcelWriter writer) {
-            int cell = 1;
-            writer.Column(cell++).Style.DateFormat.Format = "dd-MM-yyyy HH:mm:ss";  //"Start";
-            writer.Column(cell++).Style.DateFormat.Format = "dd-MM-yyyy HH:mm:ss";  //"End";
-            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.0000";         //"M3 Prijs";
-            writer.Column(cell++).Style.NumberFormat.Format = "0.000";              //"M3 Gas";
-            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.00";         //"Gas €";
-            writer.Column(cell++).Style.NumberFormat.Format = "0.00";               //"Temperatuur";
 
-            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.0000";         //"Kwh Prijs";
-            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           //"Kwh Verbruik";
-            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Teruglevering";
-            writer.Column(cell++).Style.NumberFormat.Format = "€ #,##0.00";         // "Kwh €";
-            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Batterij Stored";
-            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Batterij Laden";
-            writer.Column(cell++).Style.NumberFormat.Format = "#,##0.00";           // "Kwh Batterij Ontladen";
-            writer.Column(cell++).Style.NumberFormat.NumberFormatId = 10;           // "Batterij Percentage Full";
+            writer.Column(Field.Start).Style.DateFormat.Format = "dd-MM-yyyy HH:mm:ss";
+            writer.Column(Field.End).Style.DateFormat.Format = "dd-MM-yyyy HH:mm:ss";
+            writer.Column(Field.M3Prijs).Style.NumberFormat.Format = "€ #,##0.0000";
+            writer.Column(Field.M3Gas).Style.NumberFormat.Format = "0.000";
+            writer.Column(Field.M3Kosten).Style.NumberFormat.Format = "€ #,##0.00";
+            writer.Column(Field.Temperatuur).Style.NumberFormat.Format = "0.00";
 
-            cell = 1;
-            _ = writer.Column(cell++).AdjustToContents();  //"Start";
-            _ = writer.Column(cell++).AdjustToContents();  //"End";
-            _ = writer.Column(cell++).AdjustToContents();  //"M3 Prijs";
-            _ = writer.Column(cell++).AdjustToContents();  //"M3 Gas";
-            _ = writer.Column(cell++).AdjustToContents();  //"Gas €";
-            _ = writer.Column(cell++).AdjustToContents();  //"Temperatuur";
+            writer.Column(Field.KwhPrijs).Style.NumberFormat.Format = "€ #,##0.0000";
+            writer.Column(Field.KwhVerbruik).Style.NumberFormat.Format = "#,##0.00";
+            writer.Column(Field.KwhZonProductie).Style.NumberFormat.Format = "#,##0.00";
+            writer.Column(Field.KwhZonDirectVerbruik).Style.NumberFormat.Format = "#,##0.00";
+            writer.Column(Field.KwhTotaalVerbruik).Style.NumberFormat.Format = "#,##0.00";
 
-            _ = writer.Column(cell++).AdjustToContents();  //"Kwh Prijs";
-            _ = writer.Column(cell++).AdjustToContents();  //"Kwh Verbruik";
-            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Teruglevering";
-            _ = writer.Column(cell++).AdjustToContents();  // "Kwh €";
-            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Stored";
-            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Laden";
-            _ = writer.Column(cell++).AdjustToContents();  // "Kwh Batterij Ontladen";
-            _ = writer.Column(cell++).AdjustToContents();  // "Batterij Percentage Full";
+            writer.Column(Field.KwhTeruglevering).Style.NumberFormat.Format = "#,##0.00";
+            writer.Column(Field.KwhKosten).Style.NumberFormat.Format = "€ #,##0.00";
+            writer.Column(Field.KwhBatterijStored).Style.NumberFormat.Format = "#,##0.00";
+            writer.Column(Field.KwhBatterijLaden).Style.NumberFormat.Format = "#,##0.00";
+            writer.Column(Field.KwhBatterijOntladen).Style.NumberFormat.Format = "#,##0.00";
+            writer.Column(Field.BatterijPercentageFull).Style.NumberFormat.NumberFormatId = 10;
+
+            foreach (Field field in Enum.GetValues<Field>()) {
+                _ = writer.Column(field).AdjustToContents();
+            }
             Excel.IXLRow header = writer.Header;
             _ = header.SetAutoFilter(); // Set auto filter on the header row
             _ = header.Style.Alignment.SetWrapText(true); // Wrap text in header row
@@ -129,44 +195,33 @@ namespace EnergiePrijzen.Data.Report {
         }                                                                           
                                                                                     
         internal static void WriteHeader(ExcelWriter writer) {                      
-            Excel.IXLRow header = writer.Header;                                    
-            int cell = 1;                                                           
-            header.Cell(cell++).Value = "Start";
-            header.Cell(cell++).Value = "End";
-            header.Cell(cell++).Value = "M3 Prijs";
-            header.Cell(cell++).Value = "M3 Gas";
-            header.Cell(cell++).Value = "Gas €";
-            header.Cell(cell++).Value = "Temperatuur";
-
-            header.Cell(cell++).Value = "Kwh Prijs";
-            header.Cell(cell++).Value = "Kwh Verbruik";
-            header.Cell(cell++).Value = "Kwh Teruglevering";
-            header.Cell(cell++).Value = "Kwh €";
-            header.Cell(cell++).Value = "Kwh Batterij Stored";
-            header.Cell(cell++).Value = "Kwh Batterij Laden";
-            header.Cell(cell++).Value = "Kwh Batterij Ontladen";
-            header.Cell(cell++).Value = "Batterij Percentage Full";
+            Excel.IXLRow header = writer.Header;   
+            foreach(Field field in Enum.GetValues<Field>()) {
+                header.Cell(field.ToInt()).Value = field.GetHeaderValue();
+            }
         }
 
         internal void WriteRow(ExcelWriter writer) {
             Excel.IXLRow row = writer.AddRow();           ;
-            int cell = 1;
-            row.Cell(cell++).Value = TimeStamp.Start;
-            row.Cell(cell++).Value = TimeStamp.End;
-            row.Cell(cell++).Value = M3Prijs;
-            row.Cell(cell++).Value = M3Gas;
-            row.Cell(cell++).Value = M3KostenTotaal;
-            row.Cell(cell++).Value = Temperatuur;
+            row.Cell(Field.Start).Value = TimeStamp.Start;
+            row.Cell(Field.End).Value = TimeStamp.End;
+            row.Cell(Field.M3Prijs).Value = M3Prijs;
+            row.Cell(Field.M3Gas).Value = M3Gas;
+            row.Cell(Field.M3Kosten).Value = M3KostenTotaal;
+            row.Cell(Field.Temperatuur).Value = Temperatuur;
 
 
-            row.Cell(cell++).Value = KwhPrijs;
-            row.Cell(cell++).Value = KwhVerbruik;
-            row.Cell(cell++).Value = KwhTeruglevering;
-            row.Cell(cell++).Value = KwhKostenTotaal;
-            row.Cell(cell++).Value = KwhBatterijStored;
-            row.Cell(cell++).Value = KwhBatterijLaden;
-            row.Cell(cell++).Value = KwhBatterijOntladen;
-            row.Cell(cell++).Value = BatterijPercentageFull;
+            row.Cell(Field.KwhPrijs).Value = KwhPrijs;
+            row.Cell(Field.KwhVerbruik).Value = KwhVerbruik;
+            row.Cell(Field.KwhTotaalVerbruik).Value = KwhTotaalVerbruik;
+            row.Cell(Field.KwhZonProductie).Value = KwhZonProductie;
+            row.Cell(Field.KwhZonDirectVerbruik).Value = KwhZonDirectVerbruik;
+            row.Cell(Field.KwhTeruglevering).Value = KwhTeruglevering;
+            row.Cell(Field.KwhKosten).Value = KwhKostenTotaal;
+            row.Cell(Field.KwhBatterijStored).Value = KwhBatterijStored;
+            row.Cell(Field.KwhBatterijLaden).Value = KwhBatterijLaden;
+            row.Cell(Field.KwhBatterijOntladen).Value = KwhBatterijOntladen;
+            row.Cell(Field.BatterijPercentageFull).Value = BatterijPercentageFull;
         }
     }
 }

@@ -7,9 +7,18 @@ using System.Globalization;
 namespace EnergiePrijzen {
     internal static class DoubleExtensions {
         private static readonly CultureInfo dutch = new CultureInfo("nl-NL");
+        private static readonly CultureInfo invariant = CultureInfo.InvariantCulture;
 
         public static bool TryParseDutch(this string valueAsString, out double value) {
             if (double.TryParse(valueAsString, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands, dutch, out value)) {
+                return true;
+            } else {
+                throw new FormatException($"Invalid double format: {value}");
+            }
+        }
+
+        public static bool TryParseInvariant(this string valueAsString, out double value) {
+            if (double.TryParse(valueAsString, NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands, invariant, out value)) {
                 return true;
             } else {
                 throw new FormatException($"Invalid double format: {value}");

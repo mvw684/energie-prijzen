@@ -34,6 +34,13 @@ namespace EnergiePrijzen.Data.Csv {
             return row;
         }
 
+        public Excel.IXLColumn Column<TEnum>(TEnum index) where TEnum : Enum {
+            if (sheet is null) {
+                throw new ObjectDisposedException(file.FullName);
+            }
+            return sheet.Column(index.ToInt());
+        }
+
         public Excel.IXLColumn Column(int index) {
             if (sheet is null) {
                 throw new ObjectDisposedException(file.FullName);
