@@ -62,7 +62,8 @@ namespace EnergiePrijzen.Data.Apparaten.ZonnePanelen {
         private void LoadSolarEdgeData(FileInfo file) {
             Tracer.Trace("Reading " + file.FullName);
             // dateTime is related to the past 15 minutes, we need the start of the 'period'
-            var offset = TimeSpan.FromMinutes(15);
+            // analysing results indicates the date/time value might be from the start of the period
+            var offset = TimeSpan.FromMinutes(0);
             using (var reader = new CsvReader(file, ";")) {
 
                 reader.CheckHeader("date", "value");
